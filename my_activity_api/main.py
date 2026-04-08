@@ -1,7 +1,8 @@
 from argparse import ArgumentParser
 from datetime import date
+import json
 from dotenv import load_dotenv
-from my_activity_api.garmin_fit import do_it
+import my_activity_api.garmin_fit as gfit
 
 load_dotenv()
 
@@ -18,7 +19,7 @@ def main() -> None:
         "--date",
         dest="workout_date",
         type=_parse_date,
-        default=None,
+        default=date.today(),
         help="Workout date in YYYY-MM-DD format. If omitted, uses today.",
     )
     parser.add_argument(
@@ -33,12 +34,19 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    try:
-        do_it(workout_date=args.workout_date, tmp_dir=args.tmp_dir)
-    except (RuntimeError, ValueError) as exc:
-        raise SystemExit(f"Error: {exc}") from exc
+    res = gfit.test()
+    if not res:
+        raise SystemExit("Garmin authentication failed. Check credentials and try again.")
+    
+    activity_data = gfit.get_workouts_for_date(args.workout_date)
+    print(json.dumps(activity_data, indent=2))
+    
+    # try:
+        
+    # except (RuntimeError, ValueError) as exc:
+    #     raise SystemExit(f"Error: {exc}") from exc
 
-    print("Done!")
+    # print("Done!")
 
 
 if __name__ == "__main__":

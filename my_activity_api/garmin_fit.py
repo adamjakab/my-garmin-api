@@ -21,30 +21,30 @@ ActivityResourceFetcher = Callable[[Garmin, str], Any]
 
 ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
     ("activity", lambda api, activity_id: api.get_activity(activity_id)),
-    ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
-    ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
-    (
-        "typed_splits",
-        lambda api, activity_id: api.get_activity_typed_splits(activity_id),
-    ),
-    (
-        "split_summaries",
-        lambda api, activity_id: api.get_activity_split_summaries(activity_id),
-    ),
-    ("weather", lambda api, activity_id: api.get_activity_weather(activity_id)),
-    (
-        "hr_time_in_zones",
-        lambda api, activity_id: api.get_activity_hr_in_timezones(activity_id),
-    ),
-    (
-        "power_time_in_zones",
-        lambda api, activity_id: api.get_activity_power_in_timezones(activity_id),
-    ),
-    (
-        "exercise_sets",
-        lambda api, activity_id: api.get_activity_exercise_sets(activity_id),
-    ),
-    ("gear", lambda api, activity_id: api.get_activity_gear(activity_id)),
+    # ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
+    # ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
+    # (
+    #     "typed_splits",
+    #     lambda api, activity_id: api.get_activity_typed_splits(activity_id),
+    # ),
+    # (
+    #     "split_summaries",
+    #     lambda api, activity_id: api.get_activity_split_summaries(activity_id),
+    # ),
+    # ("weather", lambda api, activity_id: api.get_activity_weather(activity_id)),
+    # (
+    #     "hr_time_in_zones",
+    #     lambda api, activity_id: api.get_activity_hr_in_timezones(activity_id),
+    # ),
+    # (
+    #     "power_time_in_zones",
+    #     lambda api, activity_id: api.get_activity_power_in_timezones(activity_id),
+    # ),
+    # (
+    #     "exercise_sets",
+    #     lambda api, activity_id: api.get_activity_exercise_sets(activity_id),
+    # ),
+    # ("gear", lambda api, activity_id: api.get_activity_gear(activity_id)),
 )
 
 
@@ -93,14 +93,10 @@ def _build_workout_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, A
 
 
 def get_workouts_for_date(
-    workout_date: date | None = None,
-    api: Garmin | None = None,
+    workout_date: date,
 ) -> list[dict[str, Any]]:
     """Return all available Garmin workout data for a single day."""
-    if workout_date is None:
-        workout_date = date.today()
-
-    garmin_api = api or init_api()
+    garmin_api = init_api()
     if not garmin_api:
         return []
 
@@ -108,28 +104,20 @@ def get_workouts_for_date(
         startdate=workout_date.isoformat(),
         enddate=workout_date.isoformat(),
     )
+    
     return [_build_workout_payload(garmin_api, activity) for activity in activities]
 
 
-def do_it(workout_date: date | None = None, tmp_dir: str = "tmp") -> list[dict[str, Any]]:
-    """Fetch workouts for a day and print them as JSON."""
-    _ = tmp_dir
-
+def test() -> bool:
+    """Test Garmin authentication and print user info."""
     api = init_api()
     if not api:
-        return []
+        return False
 
-    if workout_date is None:
-        workout_date = date.today()
-
-    full_name = api.get_full_name() or ""
-    first_name = full_name.split()[0] if full_name.strip() else "Unknown User"
-    print(f"Welcome to Garmin. You are: {first_name}.")
-
-    workouts = get_workouts_for_date(workout_date=workout_date, api=api)
-    print(json.dumps(workouts, indent=2))
-    return workouts
-
+    print(f"Welcome {api.display_name}.")
+    
+    return True
+    
 def init_api() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 
