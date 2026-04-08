@@ -52,17 +52,29 @@ source .venv/bin/activate
 poetry run app
 ```
 
-Download last workout FIT file to `tmp/`:
+Fetch all workouts for today as JSON:
 
 ```bash
 poetry run app
 ```
 
-Download workout FIT file for a specific date:
+Fetch all workouts for a specific date as JSON:
 
 ```bash
 poetry run app --date 2026-04-01
 ```
+
+The output is a JSON array. Each item represents one workout found for that date and includes:
+
+- `summary`: the activity returned by Garmin's activity search endpoint for that date
+- `activity`: the per-activity summary endpoint payload
+- `details`: chart and lap/detail payload
+- `splits`, `typed_splits`, `split_summaries`
+- `weather`, `hr_time_in_zones`, `power_time_in_zones`
+- `exercise_sets`, `gear`
+- `errors`: optional per-resource errors when Garmin exposes the activity but one enrichment endpoint fails
+
+For Python usage, call `get_workouts_for_date(...)` from [my_activity_api/garmin_fit.py](/home/jackisback/WslCode/garmin/my-activity-api/my_activity_api/garmin_fit.py).
 
 ## Notes
 

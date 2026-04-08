@@ -13,13 +13,13 @@ def _parse_date(value: str) -> date:
 
 
 def main() -> None:
-    parser = ArgumentParser(description="Download Garmin FIT file")
+    parser = ArgumentParser(description="Fetch Garmin workout data for a date")
     parser.add_argument(
         "--date",
         dest="workout_date",
         type=_parse_date,
         default=None,
-        help="Workout date in YYYY-MM-DD format. If omitted, uses last workout.",
+        help="Workout date in YYYY-MM-DD format. If omitted, uses today.",
     )
     parser.add_argument(
         "--tmp-dir",
