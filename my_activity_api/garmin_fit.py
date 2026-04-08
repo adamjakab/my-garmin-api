@@ -6,6 +6,7 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 
@@ -94,8 +95,27 @@ def _build_workout_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, A
 
 def get_workouts_for_date(
     workout_date: date,
+    tmp_dir: str = "tmp",
+    cache_ttl_seconds: int = 3600,
 ) -> list[dict[str, Any]]:
     """Return all available Garmin workout data for a single day."""
+    cache_dir = Path(tmp_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"workouts_{workout_date.isoformat()}.json"
+
+    if cache_file.exists():
+        cache_age_seconds = time.time() - cache_file.stat().st_mtime
+        if cache_age_seconds > cache_ttl_seconds:
+            cache_file.unlink(missing_ok=True)
+        else:
+            try:
+                with cache_file.open("r", encoding="utf-8") as file_handle:
+                    cached_data = json.load(file_handle)
+                if isinstance(cached_data, list):
+                    return cached_data
+            except (OSError, json.JSONDecodeError):
+                cache_file.unlink(missing_ok=True)
+
     garmin_api = init_api()
     if not garmin_api:
         return []
@@ -104,8 +124,12 @@ def get_workouts_for_date(
         startdate=workout_date.isoformat(),
         enddate=workout_date.isoformat(),
     )
-    
-    return [_build_workout_payload(garmin_api, activity) for activity in activities]
+
+    workout_payload = [_build_workout_payload(garmin_api, activity) for activity in activities]
+    with cache_file.open("w", encoding="utf-8") as file_handle:
+        json.dump(workout_payload, file_handle, indent=2)
+
+    return workout_payload
 
 
 def test() -> bool:

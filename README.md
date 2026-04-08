@@ -64,6 +64,12 @@ Fetch all workouts for a specific date as JSON:
 poetry run app --date 2026-04-01
 ```
 
+Cache behavior:
+
+- Results are cached in `tmp/workouts_YYYY-MM-DD.json` (or the directory passed to `--tmp-dir`).
+- Successive requests for the same date use the cached file.
+- If the cache file is older than 1 hour, it is deleted and fresh data is fetched from Garmin Connect.
+
 The output is a JSON array. Each item represents one workout found for that date and includes:
 
 - `summary`: the activity returned by Garmin's activity search endpoint for that date

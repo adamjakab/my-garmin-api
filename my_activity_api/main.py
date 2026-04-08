@@ -34,19 +34,23 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    res = gfit.test()
-    if not res:
-        raise SystemExit("Garmin authentication failed. Check credentials and try again.")
-    
-    activity_data = gfit.get_workouts_for_date(args.workout_date)
-    print(json.dumps(activity_data, indent=2))
-    
-    # try:
-        
-    # except (RuntimeError, ValueError) as exc:
-    #     raise SystemExit(f"Error: {exc}") from exc
+    try:
+        if args.test_auth:
+            res = gfit.test()
+            if not res:
+                raise SystemExit(
+                    "Garmin authentication failed. Check credentials and try again."
+                )
+            print("Authentication successful.")
+            return
 
-    # print("Done!")
+        activity_data = gfit.get_workouts_for_date(
+            workout_date=args.workout_date,
+            tmp_dir=args.tmp_dir,
+        )
+        print(json.dumps(activity_data, indent=2))
+    except (RuntimeError, ValueError) as exc:
+        raise SystemExit(f"Error: {exc}") from exc
 
 
 if __name__ == "__main__":
