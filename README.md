@@ -13,7 +13,6 @@ Poetry-based Python project using a local virtual environment in `.venv`.
 - GARMIN_EMAIL: Garmin Connect email
 - GARMIN_PASSWORD: Garmin Connect password
 - GARMIN_TOKEN_STORE (optional): token storage directory/file path passed to `client.login(...)`
-- GARMIN_TOKENSTORE (legacy, optional): also accepted for backward compatibility
 
 Create a local `.env` file in the project root:
 

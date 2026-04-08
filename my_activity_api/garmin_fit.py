@@ -16,10 +16,12 @@ from .garminconnect import (
 
 def do_it(workout_date: date | None = None, tmp_dir: str = "tmp"):
     """Basic usage example."""
+    _ = tmp_dir
+
     api = init_api()
     if not api:
         return
-    
+
     if not workout_date:
         workout_date = date.today()
 
