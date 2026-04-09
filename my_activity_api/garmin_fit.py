@@ -9,7 +9,8 @@ import sys
 import time
 from typing import Any
 
-# Using local copy of garminconnect at PR #345 (https://github.com/cyberjunky/python-garminconnect/pull/345)
+# Using local copy of garminconnect at PR #345
+# (https://github.com/cyberjunky/python-garminconnect/pull/345)
 # main branch does not work atm
 from .garminconnect import (
     Garmin,
@@ -126,7 +127,9 @@ def get_workouts_for_date(
         enddate=workout_date.isoformat(),
     )
 
-    workout_payload = [_build_workout_payload(garmin_api, activity) for activity in activities]
+    workout_payload = [
+        _build_workout_payload(garmin_api, activity) for activity in activities
+    ]
     with cache_file.open("w", encoding="utf-8") as file_handle:
         json.dump(workout_payload, file_handle, indent=2)
 
@@ -140,9 +143,9 @@ def test() -> bool:
         return False
 
     print(f"Welcome {api.display_name}.")
-    
     return True
-    
+
+
 def init_api() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 
