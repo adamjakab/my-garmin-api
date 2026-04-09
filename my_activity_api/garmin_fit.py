@@ -9,7 +9,8 @@ import sys
 import time
 from typing import Any
 
-
+# Using local copy of garminconnect at PR #345 (https://github.com/cyberjunky/python-garminconnect/pull/345)
+# main branch does not work atm
 from .garminconnect import (
     Garmin,
     GarminConnectAuthenticationError,
@@ -23,7 +24,7 @@ ActivityResourceFetcher = Callable[[Garmin, str], Any]
 ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
     ("activity", lambda api, activity_id: api.get_activity(activity_id)),
     # ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
-    # ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
+    ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
     # (
     #     "typed_splits",
     #     lambda api, activity_id: api.get_activity_typed_splits(activity_id),

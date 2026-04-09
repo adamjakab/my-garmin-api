@@ -18,6 +18,9 @@ dependencies = [
 app = "my_activity_api.main:main"
 
 
+[tool.pylint.MASTER]
+ignore-paths = ["my_activity_api/garminconnect"]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

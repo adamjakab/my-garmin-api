@@ -1,4 +1,8 @@
 {
+    "python.analysis.exclude": [
+        ".venv/**",
+        "my_activity_api/garminconnect/**"
+    ],
     "cSpell.words": [
         "enddate",
         "garminconnect",
