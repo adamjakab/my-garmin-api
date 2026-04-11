@@ -1,5 +1,11 @@
 {
     "python.analysis.exclude": [
+        "**/node_modules", 
+        "**/__pycache__", 
+        ".git", 
+        "**/build", 
+        "env/**", 
+        "**/.*",
         ".venv/**",
         "my_activity_api/garminconnect/**"
     ],

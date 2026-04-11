@@ -9,10 +9,10 @@ import sys
 import time
 from typing import Any
 
-# Using local copy of garminconnect at PR #345
+# Using local copy of garminconnect at PR #345 (.garminconnect submodule)
 # (https://github.com/cyberjunky/python-garminconnect/pull/345)
 # main branch does not work atm
-from .garminconnect import (
+from garminconnect import (
     Garmin,
     GarminConnectAuthenticationError,
     GarminConnectConnectionError,
