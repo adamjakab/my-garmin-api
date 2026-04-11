@@ -406,6 +406,30 @@ standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.8)", "htt
 standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.8)", "httpx (>=0.23.0,<1.0.0)", "jinja2 (>=3.1.5)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "garminconnect"
+version = "0.3.2"
+description = "Python 3 API wrapper for Garmin Connect"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "garminconnect-0.3.2-py3-none-any.whl", hash = "sha256:d0b6f332c3262209ef3e48e9a49ccf797a70ff5a7fbd9a546a9c4e9375654106"},
+    {file = "garminconnect-0.3.2.tar.gz", hash = "sha256:ca9d813139cb5f81cd6fc90236a225608e7e13acd7b1034170b0facfdd072d9a"},
+]
+
+[package.dependencies]
+curl_cffi = ">=0.6"
+requests = ">=2.28"
+ua-generator = ">=1.0"
+
+[package.extras]
+dev = ["ipdb", "ipykernel", "ipython", "matplotlib", "pandas"]
+example = ["readchar"]
+linting = ["black[jupyter]", "isort", "mypy", "ruff", "types-requests"]
+testing = ["coverage", "pytest", "pytest-vcr (>=1.0.2)", "vcrpy (>=7.0.0)"]
+workout = ["pydantic (>=2.0.0)"]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -691,14 +715,14 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<8)"]
 
 [[package]]
 name = "rich"
-version = "14.3.3"
+version = "14.3.4"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
 python-versions = ">=3.8.0"
 groups = ["main"]
 files = [
-    {file = "rich-14.3.3-py3-none-any.whl", hash = "sha256:793431c1f8619afa7d3b52b2cdec859562b950ea0d4b6b505397612db8d5362d"},
-    {file = "rich-14.3.3.tar.gz", hash = "sha256:b8daa0b9e4eef54dd8cf7c86c03713f53241884e814f4e2f5fb342fe520f639b"},
+    {file = "rich-14.3.4-py3-none-any.whl", hash = "sha256:07e7adb4690f68864777b1450859253bed81a99a31ac321ac1817b2313558952"},
+    {file = "rich-14.3.4.tar.gz", hash = "sha256:817e02727f2b25b40ef56f5aa2217f400c8489f79ca8f46ea2b70dd5e14558a9"},
 ]
 
 [package.dependencies]
@@ -807,4 +831,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "eb1915d3ad0344dc5cd10605792eac64e42f237568decb95a9df470ee86cce55"
+content-hash = "8ebee4a57bc4660e18312340e914ea9b1baa9e2a5891d95f1418eea3c7b93002"

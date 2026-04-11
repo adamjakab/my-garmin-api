@@ -123,8 +123,8 @@ Response:
 
 ```json
 {
-	"status": "ok",
-	"message": "Garmin Activity API is running"
+ "status": "ok",
+ "message": "Garmin Activity API is running"
 }
 ```
 
@@ -147,23 +147,23 @@ Response:
 
 ```json
 {
-	"date": "2026-04-09",
-	"count": 2,
-	"workouts": [
-		{
-			"activity_id": 12345,
-			"summary": { ... },
-			"activity": { ... },
-			"details": { ... },
-			"splits": [ ... ],
-			"weather": { ... },
-			"hr_time_in_zones": { ... },
-			"power_time_in_zones": { ... },
-			"exercise_sets": [ ... ],
-			"gear": [ ... ],
-			"errors": {}
-		}
-	]
+ "date": "2026-04-09",
+ "count": 2,
+ "workouts": [
+  {
+   "activity_id": 12345,
+   "summary": { ... },
+   "activity": { ... },
+   "details": { ... },
+   "splits": [ ... ],
+   "weather": { ... },
+   "hr_time_in_zones": { ... },
+   "power_time_in_zones": { ... },
+   "exercise_sets": [ ... ],
+   "gear": [ ... ],
+   "errors": {}
+  }
+ ]
 }
 ```
 
@@ -179,7 +179,7 @@ curl http://localhost:8000/workouts/2026-04-09
 
 The OpenAPI 3.0 schema is automatically generated and available at:
 
-```
+```txt
 http://localhost:8000/openapi.json
 ```
 
@@ -200,7 +200,7 @@ http://localhost:8000/openapi.json
 
 While developing, access the interactive API docs:
 
-```
+```txt
 http://localhost:8000/docs         # Swagger UI
 http://localhost:8000/redoc        # ReDoc
 ```
@@ -229,6 +229,7 @@ The API reuses the same caching mechanism as the CLI:
 - Default TTL: 1 hour (3600 seconds)
 - Override via `?cache_ttl_seconds=` query parameter
 - Manual clear: `rm tmp/workouts_*.json` to force refresh on next request
+
 ## Notes
 
 - Project-local Poetry config is in `poetry.toml` with `virtualenvs.create = true` and `virtualenvs.in-project = true`.
