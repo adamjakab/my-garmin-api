@@ -16,6 +16,7 @@ Python project to make your Garmin data accessible through a FastAPI service.
 - GARMIN_EMAIL: Garmin Connect email
 - GARMIN_PASSWORD: Garmin Connect password
 - GARMIN_TOKEN_STORE (optional): token storage directory/file path passed to `client.login(...)`
+- API_KEY: shared secret required in the `X-API-Key` request header
 
 Create a local `.env` file in the project root:
 
@@ -24,6 +25,7 @@ GARMIN_EMAIL=your@email.com
 GARMIN_PASSWORD=your-password
 # Optional:
 # GARMIN_TOKEN_STORE=~/.garminconnect
+API_KEY=replace-with-a-strong-random-value
 ```
 
 The app loads `.env` automatically at runtime via `python-dotenv`.
@@ -91,6 +93,10 @@ For Python usage, call `get_workouts_for_date(...)` from [my_garmin_api/garmin_f
 
 The project exposes cached workouts through FastAPI. This is the supported interface for local use, integrations, and OpenAPI-based tooling.
 
+All API endpoints require the `X-API-Key` header to match the configured `API_KEY` value.
+
+The documentation routes `/docs` and `/openapi.json` are exempt so you can browse the schema without the header. The actual API endpoints still require `X-API-Key`.
+
 ### Start the API Server
 
 ```bash
@@ -134,6 +140,9 @@ Recommended workflow:
 
 ```bash
 curl http://localhost:8000/
+
+# With API key
+curl -H "X-API-Key: <your-api-key>" http://localhost:8000/
 ```
 
 Response:
@@ -151,13 +160,13 @@ Fetch workouts for a specific date using query parameter.
 
 ```bash
 # Today's workouts
-curl http://localhost:8000/workouts
+curl -H "X-API-Key: <your-api-key>" http://localhost:8000/workouts
 
 # Specific date
-curl "http://localhost:8000/workouts?date=2026-04-09"
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/workouts?date=2026-04-09"
 
 # With custom cache TTL (seconds)
-curl "http://localhost:8000/workouts?date=2026-04-09&cache_ttl_seconds=7200"
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/workouts?date=2026-04-09&cache_ttl_seconds=7200"
 ```
 
 Response:
@@ -189,7 +198,7 @@ Response:
 Alternative endpoint using path parameter instead of query string.
 
 ```bash
-curl http://localhost:8000/workouts/2026-04-09
+curl -H "X-API-Key: <your-api-key>" http://localhost:8000/workouts/2026-04-09
 ```
 
 ### OpenAPI Schema (ChatGPT Integration)
