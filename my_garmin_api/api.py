@@ -9,12 +9,12 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 import uvicorn
 
-import my_activity_api.garmin_fit as gfit
+import my_garmin_api.garmin_fit as gfit
 
 load_dotenv()
 
 app = FastAPI(
-    title="Garmin Activity API",
+    title="My Garmin API",
     description="REST API for fetching and caching Garmin Connect workout data. "
     "Use the `/openapi.json` endpoint to retrieve the OpenAPI 3.0 schema for ChatGPT GPT integration.",
     version="0.1.0",
@@ -26,7 +26,7 @@ app = FastAPI(
 @app.get("/", tags=["health"])
 async def health_check() -> dict[str, str]:
     """Health check endpoint."""
-    return {"status": "ok", "message": "Garmin Activity API is running"}
+    return {"status": "ok", "message": "My Garmin API is running"}
 
 
 @app.get("/workouts", tags=["activities"])
@@ -157,12 +157,12 @@ def main() -> None:
     host = os.getenv("API_HOST", "127.0.0.1")
     reload = os.getenv("API_RELOAD", "false").lower() == "true"
 
-    print(f"Starting Garmin Activity API on http://{host}:{port}")
+    print(f"Starting My Garmin API on http://{host}:{port}")
     print(f"OpenAPI schema available at http://{host}:{port}/openapi.json")
     print(f"Interactive docs at http://{host}:{port}/docs")
 
     uvicorn.run(
-        "my_activity_api.api:app",
+        "my_garmin_api.api:app",
         host=host,
         port=port,
         reload=reload,

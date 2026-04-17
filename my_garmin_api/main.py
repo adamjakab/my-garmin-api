@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from datetime import date
 import json
 from dotenv import load_dotenv
-import my_activity_api.garmin_fit as gfit
+import my_garmin_api.garmin_fit as gfit
 
 load_dotenv()
 

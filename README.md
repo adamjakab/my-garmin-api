@@ -1,4 +1,4 @@
-# My Garmin API (my-garmin-appi)
+# My Garmin API (`my-garmin-api`)
 
 Python project to make your Garmin data accessible through the API you were never given.
 
@@ -80,7 +80,7 @@ The output is a JSON array. Each item represents one workout found for that date
 - `exercise_sets`, `gear`
 - `errors`: optional per-resource errors when Garmin exposes the activity but one enrichment endpoint fails
 
-For Python usage, call `get_workouts_for_date(...)` from [my_activity_api/garmin_fit.py](/home/jackisback/WslCode/garmin/my-activity-api/my_activity_api/garmin_fit.py).
+For Python usage, call `get_workouts_for_date(...)` from [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
 
 ## REST API (OpenAPI / ChatGPT)
 
@@ -124,7 +124,7 @@ Response:
 ```json
 {
  "status": "ok",
- "message": "Garmin Activity API is running"
+ "message": "My Garmin API is running"
 }
 ```
 

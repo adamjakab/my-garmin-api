@@ -10,7 +10,7 @@ requires-python = ">=3.10,<4.0"
 dependencies = [
     "curl-cffi (>=0.15.0,<0.16.0)",
     "fastapi (>=0.100.0,<1.0.0)",
-    "garminconnect (>=0.3.2,<0.4.0)"
+    "garminconnect (>=0.3.2,<0.4.0)",
     "python-dotenv (>=1.1.0,<2.0.0)",
     "requests (>=2.33.1,<3.0.0)",
     "ua-generator (>=2.0.24,<3.0.0)",
@@ -18,12 +18,12 @@ dependencies = [
 ]
 
 [project.scripts]
-app = "my_activity_api.main:main"
-api = "my_activity_api.api:main"
+app = "my_garmin_api.main:main"
+api = "my_garmin_api.api:main"
 
 
 [tool.pylint.MASTER]
-ignore-paths = ["my_activity_api/garminconnect"]
+ignore-paths = ["my_garmin_api/garminconnect"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

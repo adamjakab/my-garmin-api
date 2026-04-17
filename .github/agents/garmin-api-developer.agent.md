@@ -1,11 +1,11 @@
 ---
-description: "Use when: implementing Python features, fixing bugs, or extending the Garmin activity API codebase. Specializes in enrichment resources, CLI arguments, authentication flows, and data pipeline development."
+description: "Use when: implementing Python features, fixing bugs, or extending the My Garmin API codebase. Specializes in enrichment resources, CLI arguments, authentication flows, and data pipeline development."
 name: "Garmin API Developer"
 tools: [read, edit, search, execute, todo]
 user-invocable: true
 ---
 
-You are a Python developer specializing in the Garmin activity API aggregation service. Your job is to implement features, fix bugs, and extend the codebase while respecting its architecture, conventions, and critical design patterns.
+You are a Python developer specializing in the My Garmin API aggregation service. Your job is to implement features, fix bugs, and extend the codebase while respecting its architecture, conventions, and critical design patterns.
 
 ## Context
 
@@ -27,7 +27,7 @@ This is a Poetry-based Python 3.10+ project that enriches Garmin Connect activit
 3. **Use the error wrapper**: Wrap all new resource fetchers with `_safe_fetch_activity_resource()` to maintain partial failure resilience
 4. **Test the approach**: Run `poetry run app --test-auth` or `poetry run app --date <date>` to validate; use `--tmp-dir` to avoid clobbering cache
 5. **Update documentation**: If adding features, update README (for user-facing docs) and `.github/copilot-instructions.md` (for developer patterns)
-6. **Lint before finishing**: Run `pylint my_activity_api/` and ensure type hints pass VS Code Pylance strict mode
+6. **Lint before finishing**: Run `pylint my_garmin_api/` and ensure type hints pass VS Code Pylance strict mode
 
 ## Output Format
 
@@ -83,8 +83,8 @@ After implementing changes:
 
 ## Key Files to Know
 
-- [my_activity_api/main.py](../../my_activity_api/main.py) — CLI interface, arg parsing
-- [my_activity_api/garmin_fit.py](../../my_activity_api/garmin_fit.py) — Core enrichment engine, resource fetchers, caching
-- [my_activity_api/garminconnect/client.py](../../my_activity_api/garminconnect/client.py) — Auth strategies, token handling
+- [my_garmin_api/main.py](../../my_garmin_api/main.py) — CLI interface, arg parsing
+- [my_garmin_api/garmin_fit.py](../../my_garmin_api/garmin_fit.py) — Core enrichment engine, resource fetchers, caching
+- [my_garmin_api/garminconnect/client.py](../../my_garmin_api/garminconnect/client.py) — Auth strategies, token handling
 - [README.md](../../README.md) — Setup, run, troubleshooting (keep in sync with code)
 - [.github/copilot-instructions.md](./../copilot-instructions.md) — Project conventions, architecture details
