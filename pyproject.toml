@@ -1,20 +1,20 @@
 [project]
-name = "my-activity-api"
+name = "my-garmin-api"
 version = "0.1.0"
-description = "Activity API service"
+description = "Personal Garmin API"
 readme = "README.md"
 authors = [
-    {name = "Adam Jakab",email = "adam@jakab.pro"}
+    {name = "Adam Jakab", email = "adam@jakab.pro"}
 ]
 requires-python = ">=3.10,<4.0"
 dependencies = [
+    "curl-cffi (>=0.15.0,<0.16.0)",
+    "fastapi (>=0.100.0,<1.0.0)",
+    "garminconnect (>=0.3.2,<0.4.0)"
     "python-dotenv (>=1.1.0,<2.0.0)",
     "requests (>=2.33.1,<3.0.0)",
-    "curl-cffi (>=0.15.0,<0.16.0)",
     "ua-generator (>=2.0.24,<3.0.0)",
-    "fastapi (>=0.100.0,<1.0.0)",
     "uvicorn (>=0.24.0,<1.0.0)",
-    "garminconnect (>=0.3.2,<0.4.0)"
 ]
 
 [project.scripts]
