@@ -3,7 +3,7 @@
 > **Warning**
 > This project is not production ready yet!
 
-Python project to make your Garmin data accessible through the API you were never given.
+Python project to make your Garmin data accessible through a FastAPI service.
 
 ## Requirements
 
@@ -50,30 +50,32 @@ poetry env info
 
 ## Run
 
+Start the API server:
+
 ```bash
 source .venv/bin/activate
-poetry run app
+poetry run api
 ```
 
 Fetch all workouts for today as JSON:
 
 ```bash
-poetry run app
+curl http://localhost:8000/workouts
 ```
 
 Fetch all workouts for a specific date as JSON:
 
 ```bash
-poetry run app --date 2026-04-01
+curl "http://localhost:8000/workouts?date=2026-04-01"
 ```
 
 Cache behavior:
 
-- Results are cached in `tmp/workouts_YYYY-MM-DD.json` (or the directory passed to `--tmp-dir`).
-- Successive requests for the same date use the cached file.
+- Results are cached in `tmp/workouts_YYYY-MM-DD.json` by default.
+- Successive API requests for the same date use the cached file.
 - If the cache file is older than 1 hour, it is deleted and fresh data is fetched from Garmin Connect.
 
-The output is a JSON array. Each item represents one workout found for that date and includes:
+The API returns a JSON object with `date`, `count`, and `workouts`. Each workout includes:
 
 - `summary`: the activity returned by Garmin's activity search endpoint for that date
 - `activity`: the per-activity summary endpoint payload
@@ -87,7 +89,7 @@ For Python usage, call `get_workouts_for_date(...)` from [my_garmin_api/garmin_f
 
 ## REST API (OpenAPI / ChatGPT)
 
-The project includes a FastAPI-based REST API that exposes cached workouts via HTTP. This is ideal for integrating with ChatGPT GPTs or other services requiring OpenAPI 3.0 schema.
+The project exposes cached workouts through FastAPI. This is the supported interface for local use, integrations, and OpenAPI-based tooling.
 
 ### Start the API Server
 
@@ -226,7 +228,7 @@ Each workout in the `workouts` array includes:
 
 ### Caching
 
-The API reuses the same caching mechanism as the CLI:
+The API uses date-based JSON cache files:
 
 - Results are cached in `tmp/workouts_YYYY-MM-DD.json`
 - Default TTL: 1 hour (3600 seconds)

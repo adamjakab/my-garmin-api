@@ -1,5 +1,5 @@
 ---
-description: "Use when: implementing Python features, fixing bugs, or extending the My Garmin API codebase. Specializes in enrichment resources, CLI arguments, authentication flows, and data pipeline development."
+description: "Use when: implementing Python features, fixing bugs, or extending the My Garmin API codebase. Specializes in enrichment resources, API endpoints, authentication flows, and data pipeline development."
 name: "Garmin API Developer"
 tools: [read, edit, search, execute, todo]
 user-invocable: true
@@ -22,10 +22,10 @@ This is a Poetry-based Python 3.10+ project that enriches Garmin Connect activit
 
 ## Approach
 
-1. **Understand the pattern**: Before implementing, study existing code. For enrichment resources, examine `ACTIVITY_RESOURCE_FETCHERS` in `garmin_fit.py`; for CLI features, check `_create_parser()` in `main.py`
+1. **Understand the pattern**: Before implementing, study existing code. For enrichment resources, examine `ACTIVITY_RESOURCE_FETCHERS` in `garmin_fit.py`; for HTTP behavior, check route handlers in `api.py`
 2. **Check the rules**: Review `.github/copilot-instructions.md` and apply file-specific modification guidelines
 3. **Use the error wrapper**: Wrap all new resource fetchers with `_safe_fetch_activity_resource()` to maintain partial failure resilience
-4. **Test the approach**: Run `poetry run app --test-auth` or `poetry run app --date <date>` to validate; use `--tmp-dir` to avoid clobbering cache
+4. **Test the approach**: Run `poetry run api` and validate with `curl "http://localhost:8000/workouts?date=<date>"`; use the `tmp_dir` query parameter to avoid clobbering cache
 5. **Update documentation**: If adding features, update README (for user-facing docs) and `.github/copilot-instructions.md` (for developer patterns)
 6. **Lint before finishing**: Run `pylint my_garmin_api/` and ensure type hints pass VS Code Pylance strict mode
 
@@ -46,23 +46,23 @@ After implementing changes:
 1. Add lambda to `ACTIVITY_RESOURCE_FETCHERS` in `garmin_fit.py`
 2. Wrap fetcher with `_safe_fetch_activity_resource()`
 3. Update `.github/copilot-instructions.md` Activity Enrichment section
-4. Run: `poetry run app --date 2026-04-01 --tmp-dir ./test-cache`
+4. Run: `curl "http://localhost:8000/workouts?date=2026-04-01&tmp_dir=./test-cache"`
 5. Verify output includes new resource and any errors are in `errors` dict
 
-### Adding a CLI Argument
+### Extending API Parameters
 
-1. Add argument to `argparse` in `_create_parser()` (main.py)
-2. Pass to `get_workouts_for_date()` if it affects behavior
-3. Add help text explaining the flag
-4. Update README with argument description in **Run** section
-5. Test: `poetry run app --help` and `poetry run app --<new-arg> <value>`
+1. Add the parameter to the relevant route in `api.py`
+2. Pass it to `get_workouts_for_date()` if it affects fetch or cache behavior
+3. Use FastAPI parameter metadata so it appears correctly in OpenAPI
+4. Update README examples in the API section
+5. Test with `curl` against the updated endpoint and inspect `/docs`
 
 ### Fixing an Authentication Issue
 
 1. Study the 5-strategy cascade in `client.py` (browser → TLS → fallback)
 2. Check token persistence: ensure `GARMIN_TOKEN_STORE` is set (default `~/.garminconnect`)
 3. Review rate limit handling: verify code doesn't immediately retry on 429
-4. Test with `poetry run app --test-auth`; watch for MFA prompts
+4. Test with `poetry run api` and a `curl` request to `/workouts`; watch for MFA prompts or Garmin rate limits in the response/error path
 
 ### Adding a REST API Endpoint
 
@@ -79,11 +79,11 @@ After implementing changes:
 1. Cache file location is in `get_workouts_for_date()` — modify with caution
 2. TTL is hardcoded to 3600 seconds; mark as TODO if making configurable
 3. Update `.github/copilot-instructions.md` Caching section if behavior changes
-4. Test cache expiry: `rm tmp/workouts_*.json && poetry run app --date 2026-04-01` (twice to verify cache reuse)
+4. Test cache expiry: `rm tmp/workouts_*.json && curl "http://localhost:8000/workouts?date=2026-04-01"` twice to verify cache reuse
 
 ## Key Files to Know
 
-- [my_garmin_api/main.py](../../my_garmin_api/main.py) — CLI interface, arg parsing
+- [my_garmin_api/api.py](../../my_garmin_api/api.py) — API routes, validation, server bootstrap
 - [my_garmin_api/garmin_fit.py](../../my_garmin_api/garmin_fit.py) — Core enrichment engine, resource fetchers, caching
 - [my_garmin_api/garminconnect/client.py](../../my_garmin_api/garminconnect/client.py) — Auth strategies, token handling
 - [README.md](../../README.md) — Setup, run, troubleshooting (keep in sync with code)

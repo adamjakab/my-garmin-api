@@ -18,7 +18,6 @@ dependencies = [
 ]
 
 [project.scripts]
-app = "my_garmin_api.main:main"
 api = "my_garmin_api.api:main"
 
 
