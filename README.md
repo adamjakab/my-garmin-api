@@ -1,6 +1,6 @@
-# my-activity-api
+# My Garmin API (my-garmin-appi)
 
-Poetry-based Python project using a local virtual environment in `.venv`.
+Python project to make your Garmin data accessible through the API you were never given.
 
 ## Requirements
 
