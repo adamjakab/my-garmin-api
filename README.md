@@ -1,5 +1,8 @@
 # My Garmin API (`my-garmin-api`)
 
+> **Warning**
+> This project is not production ready yet!
+
 Python project to make your Garmin data accessible through the API you were never given.
 
 ## Requirements
