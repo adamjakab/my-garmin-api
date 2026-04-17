@@ -1,10 +1,17 @@
+# Environment
 .venv/
+
+# Secrets
 .env
 .env.*
-tmp/
 !.env.example
+
+
+# Other
+tmp/
 __pycache__/
 *.py[cod]
 *.egg-info/
 .dist/
 build/
+

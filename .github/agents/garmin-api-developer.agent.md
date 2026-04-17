@@ -18,11 +18,6 @@ This is a Poetry-based Python 3.10+ project that enriches Garmin Connect activit
 
 ## Constraints
 
-- DO NOT use the pip-installed `garminconnect` package; the project uses a local fork (PR #345)
-- DO NOT modify authentication without understanding the 5-strategy fallback in `client.py`
-- DO NOT change the cache TTL without updating README and `.github/copilot-instructions.md`
-- DO NOT add new enrichment resources without error wrapping via `_safe_fetch_activity_resource()`
-- DO NOT add environment variables without updating the README's **Environment Variables** section
 - Only use `poetry` for dependency management; never use pip directly
 
 ## Approach
