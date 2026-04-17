@@ -59,25 +59,31 @@ source .venv/bin/activate
 poetry run api
 ```
 
-Fetch all workouts for today as JSON:
+Fetch all activities for today as JSON:
 
 ```bash
-curl http://localhost:8000/workouts
+curl http://localhost:8000/activities
 ```
 
-Fetch all workouts for a specific date as JSON:
+Fetch activities for a specific day as JSON:
 
 ```bash
-curl "http://localhost:8000/workouts?date=2026-04-01"
+curl "http://localhost:8000/activities?start_date=2026-04-01"
+```
+
+Fetch activities for a date range as JSON:
+
+```bash
+curl "http://localhost:8000/activities?start_date=2026-04-01&end_date=2026-04-03"
 ```
 
 Cache behavior:
 
-- Results are cached in `tmp/workouts_YYYY-MM-DD.json` by default.
+- Results are cached in per-day JSON files under `tmp/` by default.
 - Successive API requests for the same date use the cached file.
 - If the cache file is older than 1 hour, it is deleted and fresh data is fetched from Garmin Connect.
 
-The API returns a JSON object with `date`, `count`, and `workouts`. Each workout includes:
+The API returns a JSON object with `start_date`, `end_date`, `count`, and `activities`. Each activity includes:
 
 - `summary`: the activity returned by Garmin's activity search endpoint for that date
 - `activity`: the per-activity summary endpoint payload
@@ -87,11 +93,11 @@ The API returns a JSON object with `date`, `count`, and `workouts`. Each workout
 - `exercise_sets`, `gear`
 - `errors`: optional per-resource errors when Garmin exposes the activity but one enrichment endpoint fails
 
-For Python usage, call `get_workouts_for_date(...)` from [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
+For Python usage, call the current date-range helper in [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
 
 ## REST API (OpenAPI / ChatGPT)
 
-The project exposes cached workouts through FastAPI. This is the supported interface for local use, integrations, and OpenAPI-based tooling.
+The project exposes cached activities through FastAPI. This is the supported interface for local use, integrations, and OpenAPI-based tooling.
 
 All API endpoints require the `X-API-Key` header to match the configured `API_KEY` value.
 
@@ -154,28 +160,29 @@ Response:
 }
 ```
 
-#### GET /workouts (Query Parameter)
+#### GET /activities
 
-Fetch workouts for a specific date using query parameter.
+Fetch activities for a single day or inclusive date range using query parameters.
 
 ```bash
-# Today's workouts
-curl -H "X-API-Key: <your-api-key>" http://localhost:8000/workouts
+# Today's activities
+curl -H "X-API-Key: <your-api-key>" http://localhost:8000/activities
 
-# Specific date
-curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/workouts?date=2026-04-09"
+# Specific day
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/activities?start_date=2026-04-09"
 
-# With custom cache TTL (seconds)
-curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/workouts?date=2026-04-09&cache_ttl_seconds=7200"
+# Date range
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/activities?start_date=2026-04-09&end_date=2026-04-11"
 ```
 
 Response:
 
 ```json
 {
- "date": "2026-04-09",
+ "start_date": "2026-04-09",
+ "end_date": "2026-04-11",
  "count": 2,
- "workouts": [
+ "activities": [
   {
    "activity_id": 12345,
    "summary": { ... },
@@ -193,14 +200,6 @@ Response:
 }
 ```
 
-#### GET /workouts/{date} (Path Parameter)
-
-Alternative endpoint using path parameter instead of query string.
-
-```bash
-curl -H "X-API-Key: <your-api-key>" http://localhost:8000/workouts/2026-04-09
-```
-
 ### OpenAPI Schema (ChatGPT Integration)
 
 The OpenAPI 3.0 schema is automatically generated and available at:
@@ -214,7 +213,7 @@ http://localhost:8000/openapi.json
 1. Start the API server: `poetry run api`
 2. Expose the API (e.g., via ngrok, tunnel, or cloud deployment): `ngrok http 8000`
 3. In ChatGPT GPT settings, add schema URL: `https://<your-domain>/openapi.json`
-4. Test in ChatGPT by asking it to fetch workouts for a specific date
+4. Test in ChatGPT by asking it to fetch activities for a specific date
 
 **Example Schema URL Formats:**
 
@@ -233,7 +232,7 @@ http://localhost:8000/redoc        # ReDoc
 
 ### Response Schema
 
-Each workout in the `workouts` array includes:
+Each activity in the `activities` array includes:
 
 - **activity_id**: Garmin activity ID
 - **summary**: Activity metadata (time, distance, calories, HR)
@@ -251,10 +250,9 @@ Each workout in the `workouts` array includes:
 
 The API uses date-based JSON cache files:
 
-- Results are cached in `tmp/workouts_YYYY-MM-DD.json`
+- Results are cached in per-day JSON files under `tmp/`
 - Default TTL: 1 hour (3600 seconds)
-- Override via `?cache_ttl_seconds=` query parameter
-- Manual clear: `rm tmp/workouts_*.json` to force refresh on next request
+- Manual clear: `rm tmp/*.json` to force refresh on next request
 
 ## Notes
 

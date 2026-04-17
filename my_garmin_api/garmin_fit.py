@@ -3,7 +3,7 @@
 import json
 import os
 from collections.abc import Callable
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 import sys
 import time
@@ -134,6 +134,29 @@ def get_workouts_for_date(
         json.dump(workout_payload, file_handle, indent=2)
 
     return workout_payload
+
+
+def get_workouts_for_date_range(
+    start_date: date,
+    end_date: date,
+    tmp_dir: str = "tmp",
+    cache_ttl_seconds: int = 3600,
+) -> list[dict[str, Any]]:
+    """Return all available Garmin workout data for an inclusive date range."""
+    workouts: list[dict[str, Any]] = []
+    current_date = start_date
+
+    while current_date <= end_date:
+        workouts.extend(
+            get_workouts_for_date(
+                workout_date=current_date,
+                tmp_dir=tmp_dir,
+                cache_ttl_seconds=cache_ttl_seconds,
+            )
+        )
+        current_date += timedelta(days=1)
+
+    return workouts
 
 
 def test() -> bool:

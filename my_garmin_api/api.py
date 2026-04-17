@@ -7,7 +7,11 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 import uvicorn
 
-from .api_auth import API_KEY_HEADER_NAME, require_api_key, validate_api_key
+from my_garmin_api.api_auth import (
+    API_KEY_HEADER_NAME,
+    require_api_key,
+    validate_api_key,
+)
 from my_garmin_api.api_routes import discover_routers
 
 load_dotenv()
@@ -15,7 +19,7 @@ load_dotenv()
 app = FastAPI(
     title="My Garmin API",
     description="REST API for fetching and caching Garmin Connect workout data. "
-    "Use the `/openapi.json` endpoint to retrieve the OpenAPI 3.0 schema for ChatGPT GPT integration.",
+    "Use the [/openapi.json](./openapi.json) endpoint to retrieve the OpenAPI 3.0 schema for ChatGPT GPT integration.",
     version="0.1.0",
     docs_url="/docs",
     openapi_url="/openapi.json",
@@ -76,9 +80,7 @@ def _run_server(mode: str) -> None:
     port = int(os.getenv("API_PORT", str(defaults["port"])))
     reload_enabled = _parse_bool_env("API_RELOAD", defaults["reload"])
 
-    print(
-        f"Starting My Garmin API in {mode} mode on http://{host}:{port}"
-    )
+    print(f"Starting My Garmin API in {mode} mode on http://{host}:{port}")
     print(f"OpenAPI schema available at http://{host}:{port}/openapi.json")
     print(f"Interactive docs at http://{host}:{port}/docs")
 
