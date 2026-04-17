@@ -79,7 +79,7 @@ curl "http://localhost:8000/activities?start_date=2026-04-01&end_date=2026-04-03
 
 Cache behavior:
 
-- Results are cached in per-day JSON files under `tmp/` by default.
+- Results are cached in date-range JSON files under `tmp/` by default.
 - Successive API requests for the same date use the cached file.
 - If the cache file is older than 1 hour, it is deleted and fresh data is fetched from Garmin Connect.
 
@@ -93,7 +93,7 @@ The API returns a JSON object with `start_date`, `end_date`, `count`, and `activ
 - `exercise_sets`, `gear`
 - `errors`: optional per-resource errors when Garmin exposes the activity but one enrichment endpoint fails
 
-For Python usage, call the current date-range helper in [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
+For Python usage, call `get_activities_for_date_range(...)` from [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
 
 ## REST API (OpenAPI / ChatGPT)
 
@@ -250,7 +250,7 @@ Each activity in the `activities` array includes:
 
 The API uses date-based JSON cache files:
 
-- Results are cached in per-day JSON files under `tmp/`
+- Results are cached in date-range JSON files under `tmp/`
 - Default TTL: 1 hour (3600 seconds)
 - Manual clear: `rm tmp/*.json` to force refresh on next request
 

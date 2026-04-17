@@ -1,17 +1,14 @@
-"""Garmin workout data aggregation helpers."""
+"""Garmin activity data aggregation helpers."""
 
 import json
 import os
 from collections.abc import Callable
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 import sys
 import time
 from typing import Any
 
-# Using local copy of garminconnect at PR #345 (.garminconnect submodule)
-# (https://github.com/cyberjunky/python-garminconnect/pull/345)
-# main branch does not work atm
 from garminconnect import (
     Garmin,
     GarminConnectAuthenticationError,
@@ -65,7 +62,7 @@ def _safe_fetch_activity_resource(
         return None
 
 
-def _build_workout_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, Any]:
+def _build_activity_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, Any]:
     activity_id = activity.get("activityId")
     payload: dict[str, Any] = {
         "activity_id": activity_id,
@@ -95,15 +92,18 @@ def _build_workout_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, A
     return payload
 
 
-def get_workouts_for_date(
-    workout_date: date,
+def get_activities_for_date_range(
+    start_date: date,
+    end_date: date,
     tmp_dir: str = "tmp",
     cache_ttl_seconds: int = 3600,
 ) -> list[dict[str, Any]]:
-    """Return all available Garmin workout data for a single day."""
+    """Return all available Garmin activity data for an inclusive date range."""
     cache_dir = Path(tmp_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = cache_dir / f"workouts_{workout_date.isoformat()}.json"
+    cache_file = cache_dir / (
+        f"activities_{start_date.isoformat()}_{end_date.isoformat()}.json"
+    )
 
     if cache_file.exists():
         cache_age_seconds = time.time() - cache_file.stat().st_mtime
@@ -123,40 +123,17 @@ def get_workouts_for_date(
         return []
 
     activities = garmin_api.get_activities_by_date(
-        startdate=workout_date.isoformat(),
-        enddate=workout_date.isoformat(),
+        startdate=start_date.isoformat(),
+        enddate=end_date.isoformat(),
     )
 
-    workout_payload = [
-        _build_workout_payload(garmin_api, activity) for activity in activities
+    activity_payload = [
+        _build_activity_payload(garmin_api, activity) for activity in activities
     ]
     with cache_file.open("w", encoding="utf-8") as file_handle:
-        json.dump(workout_payload, file_handle, indent=2)
+        json.dump(activity_payload, file_handle, indent=2)
 
-    return workout_payload
-
-
-def get_workouts_for_date_range(
-    start_date: date,
-    end_date: date,
-    tmp_dir: str = "tmp",
-    cache_ttl_seconds: int = 3600,
-) -> list[dict[str, Any]]:
-    """Return all available Garmin workout data for an inclusive date range."""
-    workouts: list[dict[str, Any]] = []
-    current_date = start_date
-
-    while current_date <= end_date:
-        workouts.extend(
-            get_workouts_for_date(
-                workout_date=current_date,
-                tmp_dir=tmp_dir,
-                cache_ttl_seconds=cache_ttl_seconds,
-            )
-        )
-        current_date += timedelta(days=1)
-
-    return workouts
+    return activity_payload
 
 
 def test() -> bool:

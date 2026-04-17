@@ -13,8 +13,7 @@ This is a Poetry-based Python 3.10+ project that enriches Garmin Connect activit
 
 - **Enrichment pattern**: Lambda-based resource fetchers in `ACTIVITY_RESOURCE_FETCHERS` wrapped with `_safe_fetch_activity_resource()` for error resilience
 - **Auth strategy**: 5-fallback login cascade with token persistence (critical for avoiding rate limits)
-- **Caching**: 1-hour TTL in per-day JSON files under `tmp/`
-- **Local fork**: `garminconnect/` is PR #345 from the official repo (not PyPI), contains critical fixes
+- **Caching**: 1-hour TTL in date-range JSON files under `tmp/`
 
 ## Constraints
 
@@ -85,6 +84,5 @@ After implementing changes:
 
 - [my_garmin_api/api.py](../../my_garmin_api/api.py) — API routes, validation, server bootstrap
 - [my_garmin_api/garmin_fit.py](../../my_garmin_api/garmin_fit.py) — Core enrichment engine, resource fetchers, caching
-- [my_garmin_api/garminconnect/client.py](../../my_garmin_api/garminconnect/client.py) — Auth strategies, token handling
 - [README.md](../../README.md) — Setup, run, troubleshooting (keep in sync with code)
 - [.github/copilot-instructions.md](./../copilot-instructions.md) — Project conventions, architecture details

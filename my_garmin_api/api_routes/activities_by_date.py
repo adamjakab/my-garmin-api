@@ -76,7 +76,7 @@ async def get_activities(
         )
 
     try:
-        activities = gfit.get_workouts_for_date_range(
+        activities = gfit.get_activities_for_date_range(
             start_date=parsed_start_date,
             end_date=parsed_end_date,
         )

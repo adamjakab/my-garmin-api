@@ -6,8 +6,7 @@
         "**/build", 
         "env/**", 
         "**/.*",
-        ".venv/**",
-        "my_garmin_api/garminconnect/**"
+        ".venv/**"
     ],
     "cSpell.words": [
         "enddate",
