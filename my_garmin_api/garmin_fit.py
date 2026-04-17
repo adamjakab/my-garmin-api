@@ -1,20 +1,24 @@
 """Garmin activity data aggregation helpers."""
 
-import json
 import os
 from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 import sys
-import time
 from typing import Any
 
+from dotenv import load_dotenv
 from garminconnect import (
     Garmin,
     GarminConnectAuthenticationError,
     GarminConnectConnectionError,
     GarminConnectTooManyRequestsError,
 )
+
+from .garmin_cache import get_cache_key, load_cached_data, save_cached_data
+
+
+load_dotenv()
 
 
 ActivityResourceFetcher = Callable[[Garmin, str], Any]
@@ -95,30 +99,14 @@ def _build_activity_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, 
 def get_activities_for_date_range(
     start_date: date,
     end_date: date,
-    tmp_dir: str = "tmp",
-    cache_ttl_seconds: int = 3600,
 ) -> list[dict[str, Any]]:
     """Return all available Garmin activity data for an inclusive date range."""
-    cache_dir = Path(tmp_dir)
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = cache_dir / (
-        f"activities_{start_date.isoformat()}_{end_date.isoformat()}.json"
-    )
+    cache_key = get_cache_key("activities", start_date.isoformat(), end_date.isoformat())
+    cached_activities = load_cached_data(cache_key)
+    if isinstance(cached_activities, list):
+        return cached_activities
 
-    if cache_file.exists():
-        cache_age_seconds = time.time() - cache_file.stat().st_mtime
-        if cache_age_seconds > cache_ttl_seconds:
-            cache_file.unlink(missing_ok=True)
-        else:
-            try:
-                with cache_file.open("r", encoding="utf-8") as file_handle:
-                    cached_data = json.load(file_handle)
-                if isinstance(cached_data, list):
-                    return cached_data
-            except (OSError, json.JSONDecodeError):
-                cache_file.unlink(missing_ok=True)
-
-    garmin_api = init_api()
+    garmin_api = auth_garmin()
     if not garmin_api:
         return []
 
@@ -130,23 +118,12 @@ def get_activities_for_date_range(
     activity_payload = [
         _build_activity_payload(garmin_api, activity) for activity in activities
     ]
-    with cache_file.open("w", encoding="utf-8") as file_handle:
-        json.dump(activity_payload, file_handle, indent=2)
+    save_cached_data(cache_key, activity_payload)
 
     return activity_payload
 
 
-def test() -> bool:
-    """Test Garmin authentication and print user info."""
-    api = init_api()
-    if not api:
-        return False
-
-    print(f"Welcome {api.display_name}.")
-    return True
-
-
-def init_api() -> Garmin | None:
+def auth_garmin() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 
     tokenstore = os.getenv("GARMIN_TOKEN_STORE") or "~/.garminconnect"

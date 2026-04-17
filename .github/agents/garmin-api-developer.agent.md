@@ -13,7 +13,7 @@ This is a Poetry-based Python 3.10+ project that enriches Garmin Connect activit
 
 - **Enrichment pattern**: Lambda-based resource fetchers in `ACTIVITY_RESOURCE_FETCHERS` wrapped with `_safe_fetch_activity_resource()` for error resilience
 - **Auth strategy**: 5-fallback login cascade with token persistence (critical for avoiding rate limits)
-- **Caching**: 1-hour TTL in date-range JSON files under `tmp/`
+- **Caching**: TTL comes from `GARMIN_CACHE_EXPIRATION_SECONDS`, with files stored in `GARMIN_CACHE_FOLDER`
 
 ## Constraints
 
@@ -76,9 +76,9 @@ After implementing changes:
 ### Extending the Caching System
 
 1. Cache file location is in the Garmin data layer — modify with caution
-2. TTL is hardcoded to 3600 seconds; mark as TODO if making configurable
+2. TTL comes from `GARMIN_CACHE_EXPIRATION_SECONDS`; keep defaults and parsing behavior consistent
 3. Update `.github/copilot-instructions.md` Caching section if behavior changes
-4. Test cache expiry: `rm tmp/*.json && curl "http://localhost:8000/activities?start_date=2026-04-01"` twice to verify cache reuse
+4. Test cache expiry by clearing the configured `GARMIN_CACHE_FOLDER` and requesting the same range twice to verify cache reuse
 
 ## Key Files to Know
 

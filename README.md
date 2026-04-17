@@ -79,9 +79,9 @@ curl "http://localhost:8000/activities?start_date=2026-04-01&end_date=2026-04-03
 
 Cache behavior:
 
-- Results are cached in date-range JSON files under `tmp/` by default.
+- Results are cached in date-range JSON files under the folder configured by `GARMIN_CACHE_FOLDER`.
 - Successive API requests for the same date use the cached file.
-- If the cache file is older than 1 hour, it is deleted and fresh data is fetched from Garmin Connect.
+- If the cache file is older than `GARMIN_CACHE_EXPIRATION_SECONDS`, it is deleted and fresh data is fetched from Garmin Connect.
 
 The API returns a JSON object with `start_date`, `end_date`, `count`, and `activities`. Each activity includes:
 
@@ -93,7 +93,7 @@ The API returns a JSON object with `start_date`, `end_date`, `count`, and `activ
 - `exercise_sets`, `gear`
 - `errors`: optional per-resource errors when Garmin exposes the activity but one enrichment endpoint fails
 
-For Python usage, call `get_activities_for_date_range(...)` from [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
+For Python usage, call `get_activities_for_date_range(start_date, end_date)` from [my_garmin_api/garmin_fit.py](my_garmin_api/garmin_fit.py).
 
 ## REST API (OpenAPI / ChatGPT)
 
@@ -250,9 +250,9 @@ Each activity in the `activities` array includes:
 
 The API uses date-based JSON cache files:
 
-- Results are cached in date-range JSON files under `tmp/`
-- Default TTL: 1 hour (3600 seconds)
-- Manual clear: `rm tmp/*.json` to force refresh on next request
+- Results are cached in the folder configured by `GARMIN_CACHE_FOLDER`
+- Default TTL comes from `GARMIN_CACHE_EXPIRATION_SECONDS` (3600 seconds if unset)
+- Manual clear: remove the JSON files from your configured cache folder to force refresh on next request
 
 ## Notes
 
