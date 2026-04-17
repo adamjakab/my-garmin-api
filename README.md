@@ -95,10 +95,17 @@ The project exposes cached workouts through FastAPI. This is the supported inter
 
 ```bash
 source .venv/bin/activate
-poetry run api
+poetry run api-dev
 ```
 
-By default, the API runs on `http://127.0.0.1:8000`.
+Use one of these commands depending on the mode you want:
+
+```bash
+poetry run api-dev   # development, auto-reload enabled
+poetry run api       # production defaults, no reload
+```
+
+By default, development runs on `http://127.0.0.1:8000` and production runs on `http://0.0.0.0:8000`.
 
 ### API Configuration
 
@@ -106,15 +113,20 @@ Set these optional environment variables in `.env`:
 
 - **API_HOST**: Server host (default: `127.0.0.1`)
 - **API_PORT**: Server port (default: `8000`)
-- **API_RELOAD**: Auto-reload on code changes (default: `false`)
+- **API_RELOAD**: Override auto-reload behavior for the selected mode
 
 Example:
 
 ```dotenv
-API_HOST=0.0.0.0
+API_HOST=127.0.0.1
 API_PORT=5000
 API_RELOAD=true
 ```
+
+Recommended workflow:
+
+- Development: run `poetry run api-dev` and let Uvicorn reload whenever files under `my_garmin_api/` change.
+- Production: run `poetry run api`.
 
 ### Endpoints
 

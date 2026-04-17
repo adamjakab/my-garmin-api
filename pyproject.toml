@@ -19,6 +19,7 @@ dependencies = [
 
 [project.scripts]
 api = "my_garmin_api.api:main"
+api-dev = "my_garmin_api.api:main_dev"
 
 
 [tool.pylint.MASTER]

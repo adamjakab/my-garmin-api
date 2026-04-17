@@ -2,7 +2,6 @@
 
 import os
 from datetime import date
-# from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
@@ -23,9 +22,23 @@ app = FastAPI(
 )
 
 
+SERVER_MODES = {
+    "development": {
+        "host": "127.0.0.1",
+        "port": 8000,
+        "reload": True,
+    },
+    "production": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "reload": False,
+    },
+}
+
+
 @app.get("/", tags=["health"])
 async def health_check() -> dict[str, str]:
-    """Health check endpoint."""
+    """Health check endpoint..."""
     return {"status": "ok", "message": "My Garmin API is running"}
 
 
@@ -151,13 +164,30 @@ async def get_workouts_by_date(
         ) from exc
 
 
-def main() -> None:
-    """Run the FastAPI application."""
-    port = int(os.getenv("API_PORT", "8000"))
-    host = os.getenv("API_HOST", "127.0.0.1")
-    reload = os.getenv("API_RELOAD", "false").lower() == "true"
+def _parse_bool_env(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
 
-    print(f"Starting My Garmin API on http://{host}:{port}")
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _run_server(mode: str) -> None:
+    if mode not in SERVER_MODES:
+        supported_modes = ", ".join(sorted(SERVER_MODES))
+        raise ValueError(
+            f"Unsupported mode '{mode}'. Supported values: {supported_modes}"
+        )
+
+    defaults = SERVER_MODES[mode]
+
+    host = os.getenv("API_HOST", defaults["host"])
+    port = int(os.getenv("API_PORT", str(defaults["port"])))
+    reload_enabled = _parse_bool_env("API_RELOAD", defaults["reload"])
+
+    print(
+        f"Starting My Garmin API in {mode} mode on http://{host}:{port}"
+    )
     print(f"OpenAPI schema available at http://{host}:{port}/openapi.json")
     print(f"Interactive docs at http://{host}:{port}/docs")
 
@@ -165,8 +195,19 @@ def main() -> None:
         "my_garmin_api.api:app",
         host=host,
         port=port,
-        reload=reload,
+        reload=reload_enabled,
+        reload_dirs=["my_garmin_api"] if reload_enabled else None,
     )
+
+
+def main() -> None:
+    """Run the FastAPI application with production defaults."""
+    _run_server("production")
+
+
+def main_dev() -> None:
+    """Run the FastAPI application with development defaults and reload enabled."""
+    _run_server("development")
 
 
 if __name__ == "__main__":
