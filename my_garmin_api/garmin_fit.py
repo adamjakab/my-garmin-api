@@ -66,39 +66,12 @@ def _safe_fetch_activity_resource(
         return None
 
 
-# Top-level keys to keep from the Garmin activity summary.
-_SUMMARY_KEEP_KEYS: set[str] = {
-    "activityName",
-    "startTimeLocal",
-    "startTimeGMT",
-    "activityType",
-}
-
-# For nested dicts, specify which sub-keys to retain.
-_SUMMARY_NESTED_KEEP_KEYS: dict[str, set[str]] = {
-    "activityType": {"typeId", "typeKey"},
-}
-
-
-def _cleanup_summary(summary: dict[str, Any]) -> dict[str, Any]:
-    """Return a trimmed copy of the activity summary keeping only selected keys."""
-    cleaned: dict[str, Any] = {}
-    for key in _SUMMARY_KEEP_KEYS:
-        if key not in summary:
-            continue
-        value = summary[key]
-        if key in _SUMMARY_NESTED_KEEP_KEYS and isinstance(value, dict):
-            value = {k: v for k, v in value.items() if k in _SUMMARY_NESTED_KEEP_KEYS[key]}
-        cleaned[key] = value
-    return cleaned
-
-
 def _build_activity_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, Any]:
     activity_id = activity.get("activityId")
     
     payload: dict[str, Any] = {
         "activity_id": activity_id,
-        "summary": _cleanup_summary(activity),
+        "summary": activity,
     }
     errors: dict[str, str] = {}
 
@@ -226,7 +199,7 @@ def get_activities_for_date_range(
             day_payload = [
                 _build_activity_payload(garmin_api, a) for a in day_activities
             ]
-            save_cached_data(_day_cache_key(day), day_payload)
+            # save_cached_data(_day_cache_key(day), day_payload)
             result.extend(day_payload)
 
     return result
