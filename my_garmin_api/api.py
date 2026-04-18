@@ -30,8 +30,11 @@ def _parse_openapi_servers() -> list[dict[str, str]] | None:
 
 app = FastAPI(
     title="My Garmin API",
-    description="REST API for fetching and caching Garmin Connect workout data. "
-    "Use the [/openapi.json](./openapi.json) endpoint to retrieve the OpenAPI 3.0 schema for ChatGPT GPT integration.",
+    description=(
+        "REST API for fetching and caching Garmin Connect workout data. "
+        "Use the [/openapi.json](./openapi.json) endpoint to retrieve the schema definition. "
+        "This can be used for ChatGPT GPT integration."
+    ),
     version="0.1.0",
     docs_url="/docs",
     openapi_url="/openapi.json",
@@ -84,9 +87,7 @@ def _parse_bool_env(name: str, default: bool) -> bool:
 def _run_server(mode: str) -> None:
     if mode not in SERVER_MODES:
         supported_modes = ", ".join(sorted(SERVER_MODES))
-        raise ValueError(
-            f"Unsupported mode '{mode}'. Supported values: {supported_modes}"
-        )
+        raise ValueError(f"Unsupported mode '{mode}'. Supported values: {supported_modes}")
 
     defaults = SERVER_MODES[mode]
 

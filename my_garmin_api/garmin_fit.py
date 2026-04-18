@@ -68,7 +68,7 @@ def _safe_fetch_activity_resource(
 
 def _build_activity_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, Any]:
     activity_id = activity.get("activityId")
-    
+
     payload: dict[str, Any] = {
         "activity_id": activity_id,
         "summary": activity,
@@ -76,9 +76,7 @@ def _build_activity_payload(api: Garmin, activity: dict[str, Any]) -> dict[str, 
     errors: dict[str, str] = {}
 
     if activity_id is None:
-        payload["errors"] = {
-            "activity": "Garmin activity search response did not include activityId"
-        }
+        payload["errors"] = {"activity": "Garmin activity search response did not include activityId"}
         return payload
 
     # activity_id_str = str(activity_id)
@@ -196,10 +194,8 @@ def get_activities_for_date_range(
         buckets = _bucket_activities_by_day(activities, range_days)
 
         for day, day_activities in buckets.items():
-            day_payload = [
-                _build_activity_payload(garmin_api, a) for a in day_activities
-            ]
-            # save_cached_data(_day_cache_key(day), day_payload)
+            day_payload = [_build_activity_payload(garmin_api, a) for a in day_activities]
+            save_cached_data(_day_cache_key(day), day_payload)
             result.extend(day_payload)
 
     return result
@@ -232,9 +228,7 @@ def auth_garmin() -> Garmin | None:
             password = os.getenv("GARMIN_PASSWORD")
 
             if not email or not password:
-                raise RuntimeError(
-                    "GARMIN_EMAIL and GARMIN_PASSWORD must be set in the environment or .env file."
-                )
+                raise RuntimeError("GARMIN_EMAIL and GARMIN_PASSWORD must be set in the environment or .env file.")
 
             garmin = Garmin(
                 email=email,

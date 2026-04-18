@@ -24,7 +24,7 @@ api-dev = "my_garmin_api.api:main_dev"
 ignore-paths = ["my_garmin_api/garminconnect"]
 
 [tool.pylint."MESSAGES CONTROL"]
-disable = ["missing-class-docstring"]
+disable = ["missing-class-docstring", "unused-argument"]
 
 [tool.pylint.FORMAT]
 max-line-length = 120
