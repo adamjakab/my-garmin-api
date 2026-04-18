@@ -3,9 +3,7 @@ name = "my-garmin-api"
 version = "0.1.0"
 description = "Personal Garmin API"
 readme = "README.md"
-authors = [
-    {name = "Adam Jakab", email = "adam@jakab.pro"}
-]
+authors = [{ name = "Adam Jakab", email = "adam@jakab.pro" }]
 requires-python = ">=3.10,<4.0"
 dependencies = [
     "curl-cffi (>=0.15.0,<0.16.0)",
@@ -24,6 +22,15 @@ api-dev = "my_garmin_api.api:main_dev"
 
 [tool.pylint.MASTER]
 ignore-paths = ["my_garmin_api/garminconnect"]
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = ["missing-class-docstring"]
+
+[tool.pylint.FORMAT]
+max-line-length = 120
+
+[tool.ruff]
+line-length = 120
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

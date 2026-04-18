@@ -1,9 +1,10 @@
 """Activity endpoint for the FastAPI application."""
 
 from datetime import date
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-from typing import Optional
 
 import my_garmin_api.garmin_fit as gfit
 
@@ -21,7 +22,7 @@ class ActivityTypeSchema(BaseModel):
 
 class ActivitySummarySchema(BaseModel):
     model_config = {
-        "extra": "ignore", # allow|ignore|forbid
+        "extra": "ignore",  # allow|ignore|forbid
     }
     activityName: Optional[str] = Field(
         default=None,
@@ -397,7 +398,11 @@ def _build_activity_response(
 @router.get(
     "/activities",
     summary="Fetch activities between two specific dates.",
-    description="Fetch all activity data for a date range between the specified start and end dates. This endpoint can be used to fetch activities for a single date (start_date same as end_date) or to get activities between two specific dates.",
+    description=(
+        "Fetch all activity data for a date range between the specified start and end dates. "
+        "This endpoint can be used to fetch activities for a single date (start_date same as "
+        "end_date) or to get activities between two specific dates."
+    ),
     operation_id="getActivitiesByDateRange",
     response_model=ActivitiesResponseSchema,
 )
@@ -405,7 +410,7 @@ async def get_activities(
     start_date: date = Query(
         description="Start date in YYYY-MM-DD format. This is a required parameter.",
     ),
-    end_date: date= Query(
+    end_date: date = Query(
         description="End date in YYYY-MM-DD format. This is a required parameter.",
     ),
 ) -> ActivitiesResponseSchema:
@@ -435,8 +440,5 @@ async def get_activities(
     except Exception as exc:
         raise HTTPException(
             status_code=500,
-            detail=(
-                "Failed to fetch activities for "
-                f"{start_date.isoformat()} to {end_date.isoformat()}: {str(exc)}"
-            ),
+            detail=(f"Failed to fetch activities for {start_date.isoformat()} to {end_date.isoformat()}: {str(exc)}"),
         ) from exc
