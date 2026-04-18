@@ -3,6 +3,7 @@
 from datetime import date
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
+from typing import Optional
 
 import my_garmin_api.garmin_fit as gfit
 
@@ -22,268 +23,334 @@ class ActivitySummarySchema(BaseModel):
     model_config = {
         "extra": "ignore", # allow|ignore|forbid
     }
-    activityName: str = Field(
+    activityName: Optional[str] = Field(
+        default=None,
         title="Activity Name",
         description="The name of the activity as set by the user or device.",
     )
-    startTimeLocal: str = Field(
+    startTimeLocal: Optional[str] = Field(
+        default=None,
         title="Start Time Local",
         description="The activity start time in the local timezone of the device, in ISO 8601 format.",
     )
-    startTimeGMT: str = Field(
+    startTimeGMT: Optional[str] = Field(
+        default=None,
         title="Start Time GMT",
         description="The activity start time in GMT/UTC, in ISO 8601 format.",
     )
-    activityType: ActivityTypeSchema
-    distance: float = Field(
+    activityType: Optional[ActivityTypeSchema] = None
+    distance: Optional[float] = Field(
+        default=None,
         title="Distance",
         description="Total distance of the activity in meters.",
     )
-    duration: float = Field(
+    duration: Optional[float] = Field(
+        default=None,
         title="Duration",
         description="Total duration of the activity in seconds.",
     )
-    movingDuration: float = Field(
+    movingDuration: Optional[float] = Field(
+        default=None,
         title="Moving Duration",
         description="Duration the user was actively moving in seconds.",
     )
-    elevationGain: float = Field(
+    elevationGain: Optional[float] = Field(
+        default=None,
         title="Elevation Gain",
         description="Total elevation gained during the activity in meters.",
     )
-    elevationLoss: float = Field(
+    elevationLoss: Optional[float] = Field(
+        default=None,
         title="Elevation Loss",
         description="Total elevation lost during the activity in meters.",
     )
-    averageSpeed: float = Field(
+    averageSpeed: Optional[float] = Field(
+        default=None,
         title="Average Speed",
         description="Average speed over the activity in meters per second.",
     )
-    maxSpeed: float = Field(
+    maxSpeed: Optional[float] = Field(
+        default=None,
         title="Max Speed",
         description="Maximum speed reached during the activity in meters per second.",
     )
-    ownerDisplayName: str = Field(
+    ownerDisplayName: Optional[str] = Field(
+        default=None,
         title="Owner Display Name",
         description="The Garmin display name of the activity owner.",
     )
-    ownerFullName: str = Field(
+    ownerFullName: Optional[str] = Field(
+        default=None,
         title="Owner Full Name",
         description="The full name of the activity owner.",
     )
-    calories: float = Field(
+    calories: Optional[float] = Field(
+        default=None,
         title="Calories",
         description="Estimated calories burned during the activity.",
     )
-    bmrCalories: float = Field(
+    bmrCalories: Optional[float] = Field(
+        default=None,
         title="BMR Calories",
         description="Estimated basal metabolic rate calories during the activity duration.",
     )
-    averageHR: float = Field(
+    averageHR: Optional[float] = Field(
+        default=None,
         title="Average Heart Rate",
         description="Average heart rate during the activity in beats per minute.",
     )
-    maxHR: float = Field(
+    maxHR: Optional[float] = Field(
+        default=None,
         title="Max Heart Rate",
         description="Maximum heart rate reached during the activity in beats per minute.",
     )
-    averageRunningCadenceInStepsPerMinute: float = Field(
+    averageRunningCadenceInStepsPerMinute: Optional[float] = Field(
+        default=None,
         title="Average Running Cadence",
         description="Average running cadence in steps per minute.",
     )
-    maxRunningCadenceInStepsPerMinute: float = Field(
+    maxRunningCadenceInStepsPerMinute: Optional[float] = Field(
+        default=None,
         title="Max Running Cadence",
         description="Maximum running cadence in steps per minute.",
     )
-    steps: int = Field(
+    steps: Optional[int] = Field(
+        default=None,
         title="Steps",
         description="Total number of steps recorded for the activity.",
     )
-    sportTypeId: int = Field(
+    sportTypeId: Optional[int] = Field(
+        default=None,
         title="Sport Type ID",
         description="Numeric identifier of the sport type reported by Garmin.",
     )
-    avgPower: float = Field(
+    avgPower: Optional[float] = Field(
+        default=None,
         title="Average Power",
         description="Average power output during the activity in watts.",
     )
-    maxPower: float = Field(
+    maxPower: Optional[float] = Field(
+        default=None,
         title="Max Power",
         description="Maximum power output during the activity in watts.",
     )
-    aerobicTrainingEffect: float = Field(
+    aerobicTrainingEffect: Optional[float] = Field(
+        default=None,
         title="Aerobic Training Effect",
         description="Garmin aerobic training effect score for the activity.",
     )
-    anaerobicTrainingEffect: float = Field(
+    anaerobicTrainingEffect: Optional[float] = Field(
+        default=None,
         title="Anaerobic Training Effect",
         description="Garmin anaerobic training effect score for the activity.",
     )
-    normPower: float = Field(
+    normPower: Optional[float] = Field(
+        default=None,
         title="Normalized Power",
         description="Normalized power estimate for the activity in watts.",
     )
-    avgVerticalOscillation: float = Field(
+    avgVerticalOscillation: Optional[float] = Field(
+        default=None,
         title="Average Vertical Oscillation",
         description="Average vertical oscillation during the activity in centimeters.",
     )
-    avgGroundContactTime: float = Field(
+    avgGroundContactTime: Optional[float] = Field(
+        default=None,
         title="Average Ground Contact Time",
         description="Average ground contact time during the activity in milliseconds.",
     )
-    avgStrideLength: float = Field(
+    avgStrideLength: Optional[float] = Field(
+        default=None,
         title="Average Stride Length",
         description="Average stride length during the activity in centimeters.",
     )
-    vO2MaxValue: float = Field(
+    vO2MaxValue: Optional[float] = Field(
+        default=None,
         title="VO2 Max Value",
         description="VO2 max estimate associated with the activity.",
     )
-    avgVerticalRatio: float = Field(
+    avgVerticalRatio: Optional[float] = Field(
+        default=None,
         title="Average Vertical Ratio",
         description="Average vertical ratio during the activity.",
     )
-    workoutId: int = Field(
+    workoutId: Optional[int] = Field(
+        default=None,
         title="Workout ID",
         description="Identifier of the associated Garmin workout, if any.",
     )
-    deviceId: int = Field(
+    deviceId: Optional[int] = Field(
+        default=None,
         title="Device ID",
         description="Identifier of the Garmin device that recorded the activity.",
     )
-    minTemperature: float = Field(
+    minTemperature: Optional[float] = Field(
+        default=None,
         title="Minimum Temperature",
         description="Minimum recorded temperature during the activity in Celsius.",
     )
-    maxTemperature: float = Field(
+    maxTemperature: Optional[float] = Field(
+        default=None,
         title="Maximum Temperature",
         description="Maximum recorded temperature during the activity in Celsius.",
     )
-    minElevation: float = Field(
+    minElevation: Optional[float] = Field(
+        default=None,
         title="Minimum Elevation",
         description="Minimum elevation recorded during the activity in meters.",
     )
-    maxElevation: float = Field(
+    maxElevation: Optional[float] = Field(
+        default=None,
         title="Maximum Elevation",
         description="Maximum elevation recorded during the activity in meters.",
     )
-    avgElevation: float = Field(
+    avgElevation: Optional[float] = Field(
+        default=None,
         title="Average Elevation",
         description="Average elevation during the activity in meters.",
     )
-    maxDoubleCadence: float = Field(
+    maxDoubleCadence: Optional[float] = Field(
+        default=None,
         title="Max Double Cadence",
         description="Maximum double cadence value recorded during the activity.",
     )
-    lapCount: int = Field(
+    lapCount: Optional[int] = Field(
+        default=None,
         title="Lap Count",
         description="Number of laps recorded for the activity.",
     )
-    locationName: str = Field(
+    locationName: Optional[str] = Field(
+        default=None,
         title="Location Name",
         description="Human-readable location associated with the activity.",
     )
-    startLatitude: float = Field(
+    startLatitude: Optional[float] = Field(
+        default=None,
         title="Start Latitude",
         description="Latitude of the activity start point.",
     )
-    startLongitude: float = Field(
+    startLongitude: Optional[float] = Field(
+        default=None,
         title="Start Longitude",
         description="Longitude of the activity start point.",
     )
-    endLatitude: float = Field(
+    endLatitude: Optional[float] = Field(
+        default=None,
         title="End Latitude",
         description="Latitude of the activity end point.",
     )
-    endLongitude: float = Field(
+    endLongitude: Optional[float] = Field(
+        default=None,
         title="End Longitude",
         description="Longitude of the activity end point.",
     )
-    waterEstimated: float = Field(
+    waterEstimated: Optional[float] = Field(
+        default=None,
         title="Water Estimated",
         description="Estimated water loss for the activity.",
     )
-    trainingEffectLabel: str = Field(
+    trainingEffectLabel: Optional[str] = Field(
+        default=None,
         title="Training Effect Label",
         description="Garmin categorical label for training effect.",
     )
-    activityTrainingLoad: float = Field(
+    activityTrainingLoad: Optional[float] = Field(
+        default=None,
         title="Activity Training Load",
         description="Training load score assigned to the activity.",
     )
-    aerobicTrainingEffectMessage: str = Field(
+    aerobicTrainingEffectMessage: Optional[str] = Field(
+        default=None,
         title="Aerobic Training Effect Message",
         description="Garmin message describing aerobic training effect.",
     )
-    anaerobicTrainingEffectMessage: str = Field(
+    anaerobicTrainingEffectMessage: Optional[str] = Field(
+        default=None,
         title="Anaerobic Training Effect Message",
         description="Garmin message describing anaerobic training effect.",
     )
-    moderateIntensityMinutes: int = Field(
+    moderateIntensityMinutes: Optional[int] = Field(
+        default=None,
         title="Moderate Intensity Minutes",
         description="Minutes spent in moderate intensity during the activity.",
     )
-    vigorousIntensityMinutes: int = Field(
+    vigorousIntensityMinutes: Optional[int] = Field(
+        default=None,
         title="Vigorous Intensity Minutes",
         description="Minutes spent in vigorous intensity during the activity.",
     )
-    differenceBodyBattery: int = Field(
+    differenceBodyBattery: Optional[int] = Field(
+        default=None,
         title="Difference Body Battery",
         description="Net change in Body Battery during the activity.",
     )
-    hrTimeInZone_1: float = Field(
+    hrTimeInZone_1: Optional[float] = Field(
+        default=None,
         title="HR Time In Zone 1",
         description="Time spent in heart rate zone 1.",
     )
-    hrTimeInZone_2: float = Field(
+    hrTimeInZone_2: Optional[float] = Field(
+        default=None,
         title="HR Time In Zone 2",
         description="Time spent in heart rate zone 2.",
     )
-    hrTimeInZone_3: float = Field(
+    hrTimeInZone_3: Optional[float] = Field(
+        default=None,
         title="HR Time In Zone 3",
         description="Time spent in heart rate zone 3.",
     )
-    hrTimeInZone_4: float = Field(
+    hrTimeInZone_4: Optional[float] = Field(
+        default=None,
         title="HR Time In Zone 4",
         description="Time spent in heart rate zone 4.",
     )
-    hrTimeInZone_5: float = Field(
+    hrTimeInZone_5: Optional[float] = Field(
+        default=None,
         title="HR Time In Zone 5",
         description="Time spent in heart rate zone 5.",
     )
-    powerTimeInZone_1: float = Field(
+    powerTimeInZone_1: Optional[float] = Field(
+        default=None,
         title="Power Time In Zone 1",
         description="Time spent in power zone 1.",
     )
-    powerTimeInZone_2: float = Field(
+    powerTimeInZone_2: Optional[float] = Field(
+        default=None,
         title="Power Time In Zone 2",
         description="Time spent in power zone 2.",
     )
-    powerTimeInZone_3: float = Field(
+    powerTimeInZone_3: Optional[float] = Field(
+        default=None,
         title="Power Time In Zone 3",
         description="Time spent in power zone 3.",
     )
-    powerTimeInZone_4: float = Field(
+    powerTimeInZone_4: Optional[float] = Field(
+        default=None,
         title="Power Time In Zone 4",
         description="Time spent in power zone 4.",
     )
-    powerTimeInZone_5: float = Field(
+    powerTimeInZone_5: Optional[float] = Field(
+        default=None,
         title="Power Time In Zone 5",
         description="Time spent in power zone 5.",
     )
-    endTimeGMT: str = Field(
+    endTimeGMT: Optional[str] = Field(
+        default=None,
         title="End Time GMT",
         description="Activity end timestamp in GMT/UTC, ISO 8601 format.",
     )
-    activityUUID: str = Field(
+    activityUUID: Optional[str] = Field(
+        default=None,
         title="Activity UUID",
         description="Globally unique identifier of the activity.",
     )
-    purposeful: bool = Field(
+    purposeful: Optional[bool] = Field(
+        default=None,
         title="Purposeful",
         description="Whether Garmin marks this activity as purposeful.",
     )
-    pr: bool = Field(
+    pr: Optional[bool] = Field(
+        default=None,
         title="PR",
         description="Whether the activity includes a personal record.",
     )
