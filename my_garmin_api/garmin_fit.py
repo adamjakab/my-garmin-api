@@ -18,7 +18,8 @@ from garminconnect import (
 # ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
 #     ("activity", lambda api, activity_id: api.get_activity(activity_id)),
 #     ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
-#     ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
+#
+#   ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
 #     (
 #         "typed_splits",
 #         lambda api, activity_id: api.get_activity_typed_splits(activity_id),
@@ -152,10 +153,14 @@ def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
         raw_details = garmin_api.get_activity_details(activity_id)
         aggregated_details = _aggregate_activity_details(raw_details) if raw_details else None
 
+        # Get activity splits
+        splits = garmin_api.get_activity_splits(activity_id)
+
         payload: dict[str, Any] = {
             "activity_id": activity_id,
             "summary": flat_activity,
-            "details": aggregated_details,
+            # "details": aggregated_details,
+            "splits": splits,
         }
         return payload
     except GarminConnectConnectionError:

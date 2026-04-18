@@ -402,6 +402,12 @@ class ActivitySchema(BaseModel):
         title="Activity Details",
         description="Aggregated activity detail metrics with time-bucketed statistics.",
     )
+    # TODO: This needs a proper schema definition based on actual Garmin splits data structure. For now, we include it as a free-form dict.
+    splits: dict[str, Any] | None = Field(
+        default=None,
+        title="Activity Splits",
+        description="List of activity splits with their respective metrics.",
+    )
     errors: dict[str, str] | None = None
 
 
