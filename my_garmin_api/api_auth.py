@@ -1,13 +1,16 @@
 """API authentication helpers."""
 
+import logging
 import os
 import secrets
 
-from fastapi import HTTPException, Security, status
+from fastapi import HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader
 
+logger = logging.getLogger(__name__)
 
-API_KEY_HEADER_NAME = "X-API-Key"
+
+API_KEY_HEADER_NAME = "x-api-key"
 api_key_header = APIKeyHeader(name=API_KEY_HEADER_NAME, auto_error=False)
 
 
@@ -32,8 +35,13 @@ def validate_api_key(provided_api_key: str | None) -> None:
 
 
 async def require_api_key(
+    request: Request,
     provided_api_key: str | None = Security(api_key_header),
 ) -> str:
     """Validate the API key provided in the request headers."""
-    validate_api_key(provided_api_key)
+    try:
+        validate_api_key(provided_api_key)
+    except HTTPException:
+        logger.warning("Auth failed. Headers: %s", dict(request.headers))
+        raise
     return provided_api_key or ""
