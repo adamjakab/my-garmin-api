@@ -1,5 +1,6 @@
 """FastAPI application for exposing Garmin workout data via HTTP API with OpenAPI schema."""
 
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -15,6 +16,8 @@ from my_garmin_api.api_auth import (
 from my_garmin_api.api_routes import discover_routers
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
 
 
 def _parse_openapi_servers() -> list[dict[str, str]] | None:
