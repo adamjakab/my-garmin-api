@@ -25,30 +25,30 @@ ActivityResourceFetcher = Callable[[Garmin, str], Any]
 
 ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
     ("activity", lambda api, activity_id: api.get_activity(activity_id)),
-    ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
-    ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
-    (
-        "typed_splits",
-        lambda api, activity_id: api.get_activity_typed_splits(activity_id),
-    ),
-    (
-        "split_summaries",
-        lambda api, activity_id: api.get_activity_split_summaries(activity_id),
-    ),
-    ("weather", lambda api, activity_id: api.get_activity_weather(activity_id)),
-    (
-        "hr_time_in_zones",
-        lambda api, activity_id: api.get_activity_hr_in_timezones(activity_id),
-    ),
-    (
-        "power_time_in_zones",
-        lambda api, activity_id: api.get_activity_power_in_timezones(activity_id),
-    ),
-    (
-        "exercise_sets",
-        lambda api, activity_id: api.get_activity_exercise_sets(activity_id),
-    ),
-    ("gear", lambda api, activity_id: api.get_activity_gear(activity_id)),
+    # ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
+    # ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
+    # (
+    #     "typed_splits",
+    #     lambda api, activity_id: api.get_activity_typed_splits(activity_id),
+    # ),
+    # (
+    #     "split_summaries",
+    #     lambda api, activity_id: api.get_activity_split_summaries(activity_id),
+    # ),
+    # ("weather", lambda api, activity_id: api.get_activity_weather(activity_id)),
+    # (
+    #     "hr_time_in_zones",
+    #     lambda api, activity_id: api.get_activity_hr_in_timezones(activity_id),
+    # ),
+    # (
+    #     "power_time_in_zones",
+    #     lambda api, activity_id: api.get_activity_power_in_timezones(activity_id),
+    # ),
+    # (
+    #     "exercise_sets",
+    #     lambda api, activity_id: api.get_activity_exercise_sets(activity_id),
+    # ),
+    # ("gear", lambda api, activity_id: api.get_activity_gear(activity_id)),
 )
 
 
