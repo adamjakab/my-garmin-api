@@ -1,23 +1,38 @@
 """Activity endpoint for the FastAPI application."""
 
 from datetime import date
-
+from typing import Any, Optional
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 import my_garmin_api.garmin_fit as gfit
 
 
 class ActivityTypeSchema(BaseModel):
-    typeId: int | None = None
-    typeKey: str | None = None
+    typeId: int = Field(
+        title="Type ID",
+        description="The numeric identifier for the activity type.",
+    )
+    typeKey: str = Field(
+        title="Type Key",
+        description="The string key identifying the activity type (e.g., 'running', 'cycling').",
+    )
 
 
 class ActivitySummarySchema(BaseModel):
-    activityName: str | None = None
-    startTimeLocal: str | None = None
-    startTimeGMT: str | None = None
-    activityType: ActivityTypeSchema | None = None
+    activityName: str = Field(
+        title="Activity Name",
+        description="The name of the activity as set by the user or device.",
+    )
+    startTimeLocal: str = Field(
+        title="Start Time Local",
+        description="The activity start time in the local timezone of the device, in ISO 8601 format.",
+    )
+    startTimeGMT: str = Field(
+        title="Start Time GMT",
+        description="The activity start time in GMT/UTC, in ISO 8601 format.",
+    )
+    activityType: ActivityTypeSchema
 
 
 class ActivitySchema(BaseModel):
@@ -27,9 +42,18 @@ class ActivitySchema(BaseModel):
 
 
 class ActivitiesResponseSchema(BaseModel):
-    start_date: str
-    end_date: str
-    count: int
+    start_date: str = Field(
+        title="Start Date",
+        description="The start date of the requested range in YYYY-MM-DD format.",
+    )
+    end_date: str = Field(
+        title="End Date",
+        description="The end date of the requested range in YYYY-MM-DD format.",
+    )
+    count: int = Field(
+        title="Count",
+        description="The number of activities returned in the response for the selected date range.",
+    )
     activities: list[ActivitySchema]
 
 
@@ -49,17 +73,18 @@ def _build_activity_response(
     )
 
 
-@router.get("/activities",
-            summary="Fetch activities for a date range",
-            description="Fetch all available Garmin workout data for an inclusive date range.",
-            response_model=ActivitiesResponseSchema,
-            )
+@router.get(
+    "/activities",
+    summary="Fetch activities for a date range",
+    description="Fetch all available Garmin workout data for an inclusive date range.",
+    operation_id="getActivitiesByDateRange",
+    response_model=ActivitiesResponseSchema,
+)
 async def get_activities(
-    start_date: str | None = Query(
-        default=None,
-        description="Start date in YYYY-MM-DD format. If omitted, uses today.",
+    start_date: date = Query(
+        description="Start date in YYYY-MM-DD format. This is a required parameter.",
     ),
-    end_date: str | None = Query(
+    end_date: Optional[date] = Query(
         default=None,
         description="End date in YYYY-MM-DD format. If omitted, uses start_date.",
     ),
@@ -67,32 +92,15 @@ async def get_activities(
     """
     Fetch activities for an inclusive date range.
 
-    If `start_date` is omitted, today's date is used.
     If `end_date` is omitted, it defaults to `start_date`.
 
     **Parameters:**
-    - `start_date`: Range start in YYYY-MM-DD format (optional query param)
-    - `end_date`: Range end in YYYY-MM-DD format (optional query param)
+    - `start_date`: Range start in YYYY-MM-DD format (required)
+    - `end_date`: Range end in YYYY-MM-DD format (optional, defaults to start_date)
     """
-    try:
-        parsed_start_date = date.fromisoformat(start_date) if start_date else date.today()
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid start_date format. Use YYYY-MM-DD format",
-        ) from exc
+    parsed_end_date = end_date if end_date else start_date
 
-    try:
-        parsed_end_date = (
-            date.fromisoformat(end_date) if end_date else parsed_start_date
-        )
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid end_date format. Use YYYY-MM-DD format",
-        ) from exc
-
-    if parsed_end_date < parsed_start_date:
+    if parsed_end_date < start_date:
         raise HTTPException(
             status_code=400,
             detail="end_date cannot be before start_date",
@@ -100,11 +108,11 @@ async def get_activities(
 
     try:
         activities = gfit.get_activities_for_date_range(
-            start_date=parsed_start_date,
+            start_date=start_date,
             end_date=parsed_end_date,
         )
         return _build_activity_response(
-            parsed_start_date,
+            start_date,
             parsed_end_date,
             activities,
         )
@@ -113,6 +121,6 @@ async def get_activities(
             status_code=500,
             detail=(
                 "Failed to fetch activities for "
-                f"{parsed_start_date.isoformat()} to {parsed_end_date.isoformat()}: {str(exc)}"
+                f"{start_date.isoformat()} to {parsed_end_date.isoformat()}: {str(exc)}"
             ),
         ) from exc
