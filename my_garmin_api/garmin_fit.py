@@ -43,11 +43,89 @@ from garminconnect import (
 #     ("gear", lambda api, activity_id: api.get_activity_gear(activity_id)),
 # )
 
+METRICS_AGGREGATION_INTERVAL = 60  # seconds
+
+
+def _aggregate_activity_details(
+    details: dict[str, Any],
+    interval_seconds: int = METRICS_AGGREGATION_INTERVAL,
+) -> dict[str, Any]:
+    """Aggregate columnar activity detail metrics into time buckets with stats.
+
+    Transforms raw Garmin metrics from columnar format (indexed arrays) into
+    a keyed format with min/max/avg stats per time bucket.
+    """
+    if not details or "metricDescriptors" not in details or "activityDetailMetrics" not in details:
+        return {"aggregationInterval": interval_seconds, "metrics": {}}
+
+    # Build key -> index map from descriptors
+    descriptors = details.get("metricDescriptors", [])
+    key_index_map: dict[str, int] = {}
+    for desc in descriptors:
+        if "key" in desc and "metricsIndex" in desc:
+            key_index_map[desc["key"]] = desc["metricsIndex"]
+
+    # Find timestamp index (usually directTimestamp at index 1)
+    timestamp_index = key_index_map.get("directTimestamp")
+
+    # Aggregate metrics into buckets
+    buckets: dict[int, dict[str, list[float]]] = {}  # bucket_ts -> metric_key -> list of values
+    activity_metrics = details.get("activityDetailMetrics", [])
+
+    for measurement in activity_metrics:
+        metric_values = measurement.get("metrics", [])
+        if not metric_values or timestamp_index is None:
+            continue
+
+        # Get timestamp and bucket it
+        timestamp_ms = metric_values[timestamp_index]
+        if timestamp_ms is None:
+            continue
+        bucket_ts = int((timestamp_ms // (interval_seconds * 1000)) * (interval_seconds * 1000))
+
+        if bucket_ts not in buckets:
+            buckets[bucket_ts] = {}
+
+        # Store metric values in their bucket
+        for key, index in key_index_map.items():
+            if index < len(metric_values):
+                value = metric_values[index]
+                if value is not None:
+                    if key not in buckets[bucket_ts]:
+                        buckets[bucket_ts][key] = []
+                    buckets[bucket_ts][key].append(value)
+
+    # Calculate stats per bucket and metric
+    metrics_output: dict[str, list[dict[str, Any]]] = {}
+    for bucket_ts in sorted(buckets.keys()):
+        bucket_data = buckets[bucket_ts]
+        for key, values in bucket_data.items():
+            if key not in metrics_output:
+                metrics_output[key] = []
+
+            if values:
+                avg_val = sum(values) / len(values)
+                metrics_output[key].append(
+                    {
+                        "timestamp": bucket_ts,
+                        "min": min(values),
+                        "max": max(values),
+                        "avg": avg_val,
+                        "count": len(values),
+                    }
+                )
+
+    return {
+        "aggregationInterval": interval_seconds,
+        "metrics": metrics_output,
+    }
+
 
 def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
     """Return full details for a single activity by ID.
 
-    Returns a dict with 'activity_id' and 'summary' keys, or None if not found.
+    Returns a dict with 'activity_id', 'summary', and 'details' keys, or None if not found.
+    The 'details' contains aggregated metrics organized by time buckets with min/max/avg stats.
     """
     garmin_api = auth_garmin()
     if not garmin_api:
@@ -70,9 +148,14 @@ def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
         if "activityTypeDTO" in flat_activity:
             flat_activity["activityType"] = flat_activity.pop("activityTypeDTO")
 
+        # Get activity details and aggregate metrics
+        raw_details = garmin_api.get_activity_details(activity_id)
+        aggregated_details = _aggregate_activity_details(raw_details) if raw_details else None
+
         payload: dict[str, Any] = {
             "activity_id": activity_id,
             "summary": flat_activity,
+            "details": aggregated_details,
         }
         return payload
     except GarminConnectConnectionError:

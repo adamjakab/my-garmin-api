@@ -1,25 +1,12 @@
 """Activity detail endpoint for the FastAPI application."""
 
 from fastapi import APIRouter, HTTPException, Path
-from pydantic import BaseModel, Field
 
 from my_garmin_api.api_routes.activities_by_date import ActivitySchema
 import my_garmin_api.garmin_fit as gfit
 
 
 router = APIRouter(tags=["Activity"])
-
-
-# class ActivitySummarySchema(BaseModel):
-#     model_config = {
-#         "extra": "ignore",  # allow|ignore|forbid
-#     }
-
-
-# class ActivitySchema(BaseModel):
-#     activity_id: int | None = None
-#     summary: ActivitySummarySchema
-#     errors: dict[str, str] | None = None
 
 
 @router.get(
