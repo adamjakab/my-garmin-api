@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, Path
 
-from my_garmin_api.api_routes.activities_by_date import ActivitySchema
+from my_garmin_api.api_routes.schemas.activities import ActivitySchema
 import my_garmin_api.garmin_fit as gfit
 
 
