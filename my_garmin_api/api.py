@@ -17,7 +17,7 @@ from my_garmin_api.api_routes import discover_routers
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def _parse_openapi_servers() -> list[dict[str, str]] | None:
@@ -67,6 +67,7 @@ async def enforce_api_key(request: Request, call_next):
     try:
         validate_api_key(request.headers.get(API_KEY_HEADER_NAME))
     except HTTPException as exc:
+        logger.warning("Auth failed. Headers: %s", dict(request.headers))
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
     return await call_next(request)
@@ -103,6 +104,7 @@ def _run_server(mode: str) -> None:
         port=port,
         reload=reload_enabled,
         reload_dirs=["my_garmin_api"] if reload_enabled else None,
+        log_level="info",
     )
 
 
