@@ -1,13 +1,12 @@
 """Garmin activity data aggregation helpers."""
 
 import os
-from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 import sys
 from typing import Any
 
-from dotenv import load_dotenv
+
 from garminconnect import (
     Garmin,
     GarminConnectAuthenticationError,
@@ -15,10 +14,6 @@ from garminconnect import (
     GarminConnectTooManyRequestsError,
 )
 
-load_dotenv()
-
-
-ActivityResourceFetcher = Callable[[Garmin, str], Any]
 
 # ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
 #     ("activity", lambda api, activity_id: api.get_activity(activity_id)),
@@ -49,11 +44,46 @@ ActivityResourceFetcher = Callable[[Garmin, str], Any]
 # )
 
 
+def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
+    """Return full details for a single activity by ID.
+
+    Returns a dict with 'activity_id' and 'summary' keys, or None if not found.
+    """
+    garmin_api = auth_garmin()
+    if not garmin_api:
+        return None
+
+    try:
+        activity = garmin_api.get_activity(activity_id)
+        if not activity:
+            return None
+
+        # Flatten the nested structure from get_activity() to match schema expectations
+        # The single activity endpoint returns summaryDTO with metrics, while batch endpoint flattens them
+        flat_activity = dict(activity)
+
+        # Merge summaryDTO fields to top level
+        if "summaryDTO" in flat_activity:
+            flat_activity.update(flat_activity.pop("summaryDTO"))
+
+        # Normalize field names: activityTypeDTO -> activityType
+        if "activityTypeDTO" in flat_activity:
+            flat_activity["activityType"] = flat_activity.pop("activityTypeDTO")
+
+        payload: dict[str, Any] = {
+            "activity_id": activity_id,
+            "summary": flat_activity,
+        }
+        return payload
+    except GarminConnectConnectionError:
+        return None
+
+
 def get_activities_for_date_range(
     start_date: date,
     end_date: date,
 ) -> list[dict[str, Any]]:
-    """Return all available Garmin activity data for an inclusive date range.
+    """Return all available Garmin activity data (summary only) for an inclusive date range.
     Each activity is represented as a dict with at least an 'activity_id' and 'summary' key.
     The 'summary' value is the raw activity data returned by Garmin Connect API.
     If any errors were encountered during fetching, an 'errors' key will be included with details.

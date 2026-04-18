@@ -1,7 +1,7 @@
 """Activity endpoint for the FastAPI application."""
 
 from datetime import date
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -340,10 +340,10 @@ class ActivitySummarySchema(BaseModel):
         title="End Time GMT",
         description="Activity end timestamp in GMT/UTC, ISO 8601 format.",
     )
-    activityUUID: Optional[str] = Field(
+    activityUUID: Optional[Any] = Field(
         default=None,
         title="Activity UUID",
-        description="Globally unique identifier of the activity.",
+        description="Globally unique identifier of the activity (string or nested uuid object).",
     )
     purposeful: Optional[bool] = Field(
         default=None,

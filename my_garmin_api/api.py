@@ -3,7 +3,6 @@
 import logging
 import os
 
-from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 import uvicorn
@@ -15,7 +14,6 @@ from my_garmin_api.api_auth import (
 )
 from my_garmin_api.api_routes import discover_routers
 
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
