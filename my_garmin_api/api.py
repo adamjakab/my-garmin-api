@@ -16,6 +16,15 @@ from my_garmin_api.api_routes import discover_routers
 
 load_dotenv()
 
+
+def _parse_openapi_servers() -> list[dict[str, str]] | None:
+    """Parse comma-separated server URLs from OPENAPI_SERVERS env var."""
+    raw = os.getenv("OPENAPI_SERVERS", "").strip()
+    if not raw:
+        return None
+    return [{"url": url.strip()} for url in raw.split(",") if url.strip()]
+
+
 app = FastAPI(
     title="My Garmin API",
     description="REST API for fetching and caching Garmin Connect workout data. "
@@ -23,6 +32,7 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/docs",
     openapi_url="/openapi.json",
+    servers=_parse_openapi_servers(),
 )
 
 
