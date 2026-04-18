@@ -76,7 +76,7 @@ def _build_activity_response(
 @router.get(
     "/activities",
     summary="Fetch activities for a date range",
-    description="Fetch all available Garmin workout data for an inclusive date range.",
+    description="Fetch all available Garmin activity data for an inclusive date range between the specified start and end dates.",
     operation_id="getActivitiesByDateRange",
     response_model=ActivitiesResponseSchema,
 )
