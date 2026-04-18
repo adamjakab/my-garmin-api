@@ -3,9 +3,34 @@
 from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 import my_garmin_api.garmin_fit as gfit
+
+
+class ActivityTypeSchema(BaseModel):
+    typeId: int | None = None
+    typeKey: str | None = None
+
+
+class ActivitySummarySchema(BaseModel):
+    activityName: str | None = None
+    startTimeLocal: str | None = None
+    startTimeGMT: str | None = None
+    activityType: ActivityTypeSchema | None = None
+
+
+class ActivitySchema(BaseModel):
+    activity_id: int | None = None
+    summary: ActivitySummarySchema
+    errors: dict[str, str] | None = None
+
+
+class ActivitiesResponseSchema(BaseModel):
+    start_date: str
+    end_date: str
+    count: int
+    activities: list[ActivitySchema]
 
 
 router = APIRouter(tags=["Activities"])
@@ -15,21 +40,19 @@ def _build_activity_response(
     start_date: date,
     end_date: date,
     activities: list[dict],
-) -> JSONResponse:
-    return JSONResponse(
-        status_code=200,
-        content={
-            "start_date": start_date.isoformat(),
-            "end_date": end_date.isoformat(),
-            "count": len(activities),
-            "activities": activities,
-        },
+) -> ActivitiesResponseSchema:
+    return ActivitiesResponseSchema(
+        start_date=start_date.isoformat(),
+        end_date=end_date.isoformat(),
+        count=len(activities),
+        activities=[ActivitySchema.model_validate(a) for a in activities],
     )
 
 
 @router.get("/activities",
             summary="Fetch activities for a date range",
-            description="Fetch all available Garmin workout data for an inclusive date range."
+            description="Fetch all available Garmin workout data for an inclusive date range.",
+            response_model=ActivitiesResponseSchema,
             )
 async def get_activities(
     start_date: str | None = Query(
@@ -40,7 +63,7 @@ async def get_activities(
         default=None,
         description="End date in YYYY-MM-DD format. If omitted, uses start_date.",
     ),
-) -> JSONResponse:
+) -> ActivitiesResponseSchema:
     """
     Fetch activities for an inclusive date range.
 
