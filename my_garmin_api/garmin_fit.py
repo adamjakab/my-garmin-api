@@ -24,7 +24,7 @@ load_dotenv()
 ActivityResourceFetcher = Callable[[Garmin, str], Any]
 
 ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
-    ("activity", lambda api, activity_id: api.get_activity(activity_id)),
+    # ("activity", lambda api, activity_id: api.get_activity(activity_id)),
     # ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
     # ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
     # (
