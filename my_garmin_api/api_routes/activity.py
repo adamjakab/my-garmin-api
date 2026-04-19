@@ -9,13 +9,18 @@ import my_garmin_api.garmin_fit as gfit
 
 router = APIRouter(tags=["Activity"])
 
-_YN_DESC = 'Use "Y" to include or "N" to exclude this enrichment block.'
+_YN_DESC = 'Use "Y" to include this enrichment block.'
 
 
 @router.get(
     "/activity/{activity_id}",
-    summary="Fetch activity details by ID.",
-    description="Fetch full details for a specific activity by its ID.",
+    summary="Fetch detailed activity information.",
+    description=(
+        "Fetch full details for a specific activity identified by its ID. "
+        "Use the query parameters to specify which enrichment blocks to include in the response. "
+        "This endpoint returns a comprehensive view of the activity, including summary metrics and "
+        "optionally detailed metrics,splits, laps, exercise sets, time in zones, weather, and gear information."
+    ),
     operation_id="getActivityById",
     response_model=ActivitySchema,
 )
@@ -26,7 +31,7 @@ async def get_activity(
         description="The unique identifier of the Garmin activity.",
     ),
     details: str = Query(
-        default="Y",
+        default="N",
         description=(
             "This flag controls whether to include the detailed metrics about the activity aggregated for each 60 second interval. "
             "Each metric (heart rate, speed, cadence, etc.) includes time in zone buckets with min/max/avg values. "
@@ -35,7 +40,7 @@ async def get_activity(
         pattern="^[YyNn]$",
     ),
     splits: str = Query(
-        default="Y",
+        default="N",
         description=(
             "This flag controls whether to include auto-generated lap information and events. "
             "Laps are typically emitted at regular distance intervals (e.g. every 1 km during runs) and include aggregated metrics for that lap. "
@@ -45,7 +50,7 @@ async def get_activity(
         pattern="^[YyNn]$",
     ),
     typed_splits: str = Query(
-        default="Y",
+        default="N",
         description=(
             "This flag controls whether to include workout-phase splits such as active and rest intervals with per-phase metrics. "
             "Typed splits group split data by Garmin split type (active, rest, etc.) for easier comparison. "
@@ -54,54 +59,54 @@ async def get_activity(
         pattern="^[YyNn]$",
     ),
     split_summaries: str = Query(
-        default="Y",
+        default="N",
         description=(
-            "This flag controls whether to include the split_summaries enrichment block. "
+            "This flag controls whether to include summary information for splits. "
             "Split summaries provide aggregate stats over all splits, helping you quickly assess consistency and pacing. "
             "" + _YN_DESC
         ),
         pattern="^[YyNn]$",
     ),
     exercise_sets: str = Query(
-        default="Y",
+        default="N",
         description=(
-            "This flag controls whether to include the exercise_sets enrichment block. "
+            "This flag controls whether to include exercise set information. "
             "Exercise sets include structured workout steps and set-level performance information when present. "
             "" + _YN_DESC
         ),
         pattern="^[YyNn]$",
     ),
     hr_time_in_zones: str = Query(
-        default="Y",
+        default="N",
         description=(
-            "This flag controls whether to include the hr_time_in_zones enrichment block. "
+            "This flag controls whether to include heart rate time in zones information. "
             "Heart rate time in zones reports cumulative time spent in each configured heart rate zone. "
             "" + _YN_DESC
         ),
         pattern="^[YyNn]$",
     ),
     power_time_in_zones: str = Query(
-        default="Y",
+        default="N",
         description=(
-            "This flag controls whether to include the power_time_in_zones enrichment block. "
+            "This flag controls whether to include power time in zones information. "
             "Power time in zones reports cumulative time spent in each configured cycling power zone. "
             "" + _YN_DESC
         ),
         pattern="^[YyNn]$",
     ),
     weather: str = Query(
-        default="Y",
+        default="N",
         description=(
-            "This flag controls whether to include the weather enrichment block. "
+            "This flag controls whether to include weather information. "
             "Weather includes environmental conditions recorded for the activity such as temperature, humidity, and wind. "
             "" + _YN_DESC
         ),
         pattern="^[YyNn]$",
     ),
     gear: str = Query(
-        default="Y",
+        default="N",
         description=(
-            "This flag controls whether to include the gear enrichment block. "
+            "This flag controls whether to include gear information. "
             "Gear includes equipment associated with the activity, such as shoes or bike components when available. "
             "" + _YN_DESC
         ),
@@ -115,7 +120,7 @@ async def get_activity(
     - `activity_id`: The activity ID (positive integer, required)
     - `details`, `splits`, `typed_splits`, `split_summaries`, `exercise_sets`,
       `hr_time_in_zones`, `power_time_in_zones`, `weather`, `gear`:
-      Y/N flags controlling which enrichment blocks are included (default: Y).
+            Y/N flags controlling which enrichment blocks are included (default: N).
     """
     enabled: set[ActivityResourceName] = {
         resource  # type: ignore[misc]
