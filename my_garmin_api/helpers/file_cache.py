@@ -1,4 +1,4 @@
-"""Generic cache helpers for Garmin data aggregation."""
+"""Generic file-based cache helpers."""
 
 import hashlib
 import json
@@ -9,7 +9,7 @@ from typing import Any
 
 
 DEFAULT_CACHE_FOLDER = "cache"
-DEFAULT_CACHE_EXPIRATION_SECONDS = 24 * 60 * 60   # 24 hours
+DEFAULT_CACHE_EXPIRATION_SECONDS = 24 * 60 * 60  # 24 hours
 
 
 def _get_cache_dir() -> Path:
