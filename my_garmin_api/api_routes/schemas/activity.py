@@ -1,16 +1,19 @@
 """Activity schema models for FastAPI routes."""
 
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from .activity_details import AggregatedDetailsSchema
 from .activity_exercise_sets import ActivityExerciseSetsSchema
+from .activity_gear import ActivityGearSchema
 from .activity_hr_time_in_zones import HrTimeInZoneSchema
+from .activity_power_time_in_zones import PowerTimeInZoneSchema
 from .activity_split_summaries import ActivitySplitSummariesSchema
 from .activity_splits import ActivitySplitsSchema
 from .activity_summary import ActivitySummarySchema
 from .activity_typed_splits import ActivityTypedSplitsSchema
+from .activity_weather import ActivityWeatherSchema
 
 
 class ActivitySchema(BaseModel):
@@ -54,22 +57,19 @@ class ActivitySchema(BaseModel):
         description="Time spent in each heart rate zone during the activity.",
     )
 
-    # TODO: This needs a proper schema definition!
-    power_time_in_zones: Optional[list[dict[str, Any]]] = Field(
+    power_time_in_zones: Optional[list[PowerTimeInZoneSchema]] = Field(
         default=None,
         title="Power Time In Zones",
         description="Time spent in each power zone during the activity.",
     )
 
-    # TODO: This needs a proper schema definition!
-    weather: Optional[dict[str, Any]] = Field(
+    weather: Optional[ActivityWeatherSchema] = Field(
         default=None,
         title="Weather",
         description="Weather information associated with the activity.",
     )
 
-    # TODO: This needs a proper schema definition!
-    gear: Optional[list[dict[str, Any]]] = Field(
+    gear: Optional[list[ActivityGearSchema]] = Field(
         default=None,
         title="Gear",
         description="List of gear associated with the activity.",

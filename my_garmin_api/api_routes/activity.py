@@ -9,7 +9,7 @@ import my_garmin_api.garmin_fit as gfit
 
 router = APIRouter(tags=["Activity"])
 
-_YN_DESC = 'Include this enrichment block. Use "Y" to include or "N" to exclude.'
+_YN_DESC = 'Use "Y" to include or "N" to exclude this enrichment block.'
 
 
 @router.get(
@@ -25,15 +25,88 @@ async def get_activity(
         title="Activity ID",
         description="The unique identifier of the Garmin activity.",
     ),
-    details: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    splits: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    typed_splits: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    split_summaries: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    exercise_sets: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    hr_time_in_zones: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    power_time_in_zones: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    weather: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
-    gear: str = Query(default="Y", description=_YN_DESC, pattern="^[YyNn]$"),
+    details: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the detailed metrics about the activity aggregated for each 60 second interval. "
+            "Each metric (heart rate, speed, cadence, etc.) includes time in zone buckets with min/max/avg values. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    splits: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include auto-generated lap information and events. "
+            "Laps are typically emitted at regular distance intervals (e.g. every 1 km during runs) and include aggregated metrics for that lap. "
+            "Events include automatic notifications emitted during the activity, such as warnings for heart rate or pace being outside of the planned range. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    typed_splits: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include workout-phase splits such as active and rest intervals with per-phase metrics. "
+            "Typed splits group split data by Garmin split type (active, rest, etc.) for easier comparison. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    split_summaries: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the split_summaries enrichment block. "
+            "Split summaries provide aggregate stats over all splits, helping you quickly assess consistency and pacing. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    exercise_sets: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the exercise_sets enrichment block. "
+            "Exercise sets include structured workout steps and set-level performance information when present. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    hr_time_in_zones: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the hr_time_in_zones enrichment block. "
+            "Heart rate time in zones reports cumulative time spent in each configured heart rate zone. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    power_time_in_zones: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the power_time_in_zones enrichment block. "
+            "Power time in zones reports cumulative time spent in each configured cycling power zone. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    weather: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the weather enrichment block. "
+            "Weather includes environmental conditions recorded for the activity such as temperature, humidity, and wind. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
+    gear: str = Query(
+        default="Y",
+        description=(
+            "This flag controls whether to include the gear enrichment block. "
+            "Gear includes equipment associated with the activity, such as shoes or bike components when available. "
+            "" + _YN_DESC
+        ),
+        pattern="^[YyNn]$",
+    ),
 ) -> ActivitySchema:
     """
     Fetch full details for a specific activity.

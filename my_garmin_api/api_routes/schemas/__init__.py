@@ -12,8 +12,12 @@ from my_garmin_api.api_routes.schemas.activity_exercise_sets import (
     ExerciseSetEntrySchema,
     ExerciseSetExerciseSchema,
 )
+from my_garmin_api.api_routes.schemas.activity_gear import ActivityGearSchema
 from my_garmin_api.api_routes.schemas.activity_hr_time_in_zones import (
     HrTimeInZoneSchema,
+)
+from my_garmin_api.api_routes.schemas.activity_power_time_in_zones import (
+    PowerTimeInZoneSchema,
 )
 from my_garmin_api.api_routes.schemas.activity_splits import (
     ActivitySplitsSchema,
@@ -34,6 +38,11 @@ from my_garmin_api.api_routes.schemas.activity_typed_splits import (
     ActivityUuidSchema,
     TypedSplitSchema,
 )
+from my_garmin_api.api_routes.schemas.activity_weather import (
+    ActivityWeatherSchema,
+    WeatherStationSchema,
+    WeatherTypeSchema,
+)
 
 __all__ = [
     "ActivityTypeSchema",
@@ -45,6 +54,11 @@ __all__ = [
     "ExerciseSetEntrySchema",
     "ActivityExerciseSetsSchema",
     "HrTimeInZoneSchema",
+    "PowerTimeInZoneSchema",
+    "ActivityWeatherSchema",
+    "WeatherStationSchema",
+    "WeatherTypeSchema",
+    "ActivityGearSchema",
     "SplitSectionTypeSchema",
     "SplitEventSchema",
     "LapSchema",

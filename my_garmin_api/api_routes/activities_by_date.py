@@ -24,10 +24,16 @@ router = APIRouter(tags=["Activities"])
 )
 async def get_activities(
     start_date: date = Query(
-        description="Start date in YYYY-MM-DD format. This is a required parameter.",
+        description=(
+            "This parameter controls the start of the requested activity date range. "
+            "Provide it in YYYY-MM-DD format. This is a required parameter."
+        ),
     ),
     end_date: date = Query(
-        description="End date in YYYY-MM-DD format. This is a required parameter.",
+        description=(
+            "This parameter controls the end of the requested activity date range. "
+            "Provide it in YYYY-MM-DD format. This is a required parameter."
+        ),
     ),
 ) -> ActivitiesResponseSchema:
     """
