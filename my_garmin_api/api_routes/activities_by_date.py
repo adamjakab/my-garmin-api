@@ -5,7 +5,8 @@ from datetime import date
 from fastapi import APIRouter, HTTPException, Query
 
 import my_garmin_api.garmin_fit as gfit
-from my_garmin_api.api_routes.schemas.activities import ActivitySchema, ActivitiesResponseSchema
+from my_garmin_api.api_routes.schemas.activities import ActivitiesResponseSchema
+from my_garmin_api.api_routes.schemas.activity import ActivitySchema
 
 
 router = APIRouter(tags=["Activities"])
