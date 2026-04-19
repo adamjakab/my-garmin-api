@@ -13,120 +13,13 @@ from garminconnect import (
     GarminConnectConnectionError,
     GarminConnectTooManyRequestsError,
 )
-
-
-# ACTIVITY_RESOURCE_FETCHERS: tuple[tuple[str, ActivityResourceFetcher], ...] = (
-#     ("activity", lambda api, activity_id: api.get_activity(activity_id)),
-#     ("details", lambda api, activity_id: api.get_activity_details(activity_id)),
-#
-#   ("splits", lambda api, activity_id: api.get_activity_splits(activity_id)),
-#     (
-#         "typed_splits",
-#         lambda api, activity_id: api.get_activity_typed_splits(activity_id),
-#     ),
-#     (
-#         "split_summaries",
-#         lambda api, activity_id: api.get_activity_split_summaries(activity_id),
-#     ),
-#     ("weather", lambda api, activity_id: api.get_activity_weather(activity_id)),
-#     (
-#         "hr_time_in_zones",
-#         lambda api, activity_id: api.get_activity_hr_in_timezones(activity_id),
-#     ),
-#     (
-#         "power_time_in_zones",
-#         lambda api, activity_id: api.get_activity_power_in_timezones(activity_id),
-#     ),
-#     (
-#         "exercise_sets",
-#         lambda api, activity_id: api.get_activity_exercise_sets(activity_id),
-#     ),
-#     ("gear", lambda api, activity_id: api.get_activity_gear(activity_id)),
-# )
-
-METRICS_AGGREGATION_INTERVAL = 60  # seconds
-
-
-def _aggregate_activity_details(
-    details: dict[str, Any],
-    interval_seconds: int = METRICS_AGGREGATION_INTERVAL,
-) -> dict[str, Any]:
-    """Aggregate columnar activity detail metrics into time buckets with stats.
-
-    Transforms raw Garmin metrics from columnar format (indexed arrays) into
-    a keyed format with min/max/avg stats per time bucket.
-    """
-    if not details or "metricDescriptors" not in details or "activityDetailMetrics" not in details:
-        return {"aggregationInterval": interval_seconds, "metrics": {}}
-
-    # Build key -> index map from descriptors
-    descriptors = details.get("metricDescriptors", [])
-    key_index_map: dict[str, int] = {}
-    for desc in descriptors:
-        if "key" in desc and "metricsIndex" in desc:
-            key_index_map[desc["key"]] = desc["metricsIndex"]
-
-    # Find timestamp index (usually directTimestamp at index 1)
-    timestamp_index = key_index_map.get("directTimestamp")
-
-    # Aggregate metrics into buckets
-    buckets: dict[int, dict[str, list[float]]] = {}  # bucket_ts -> metric_key -> list of values
-    activity_metrics = details.get("activityDetailMetrics", [])
-
-    for measurement in activity_metrics:
-        metric_values = measurement.get("metrics", [])
-        if not metric_values or timestamp_index is None:
-            continue
-
-        # Get timestamp and bucket it
-        timestamp_ms = metric_values[timestamp_index]
-        if timestamp_ms is None:
-            continue
-        bucket_ts = int((timestamp_ms // (interval_seconds * 1000)) * (interval_seconds * 1000))
-
-        if bucket_ts not in buckets:
-            buckets[bucket_ts] = {}
-
-        # Store metric values in their bucket
-        for key, index in key_index_map.items():
-            if index < len(metric_values):
-                value = metric_values[index]
-                if value is not None:
-                    if key not in buckets[bucket_ts]:
-                        buckets[bucket_ts][key] = []
-                    buckets[bucket_ts][key].append(value)
-
-    # Calculate stats per bucket and metric
-    metrics_output: dict[str, list[dict[str, Any]]] = {}
-    for bucket_ts in sorted(buckets.keys()):
-        bucket_data = buckets[bucket_ts]
-        for key, values in bucket_data.items():
-            if key not in metrics_output:
-                metrics_output[key] = []
-
-            if values:
-                avg_val = sum(values) / len(values)
-                metrics_output[key].append(
-                    {
-                        "timestamp": bucket_ts,
-                        "min": min(values),
-                        "max": max(values),
-                        "avg": avg_val,
-                        "count": len(values),
-                    }
-                )
-
-    return {
-        "aggregationInterval": interval_seconds,
-        "metrics": metrics_output,
-    }
+from my_garmin_api.helpers.activity_enrichment import enrich_activity_payload
 
 
 def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
     """Return full details for a single activity by ID.
 
-    Returns a dict with 'activity_id', 'summary', and 'details' keys, or None if not found.
-    The 'details' contains aggregated metrics organized by time buckets with min/max/avg stats.
+    Returns a dict with 'activity_id', 'summary', and 'splits' keys, or None if not found.
     """
     garmin_api = auth_garmin()
     if not garmin_api:
@@ -149,19 +42,21 @@ def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
         if "activityTypeDTO" in flat_activity:
             flat_activity["activityType"] = flat_activity.pop("activityTypeDTO")
 
-        # Get activity details and aggregate metrics
-        raw_details = garmin_api.get_activity_details(activity_id)
-        aggregated_details = _aggregate_activity_details(raw_details) if raw_details else None
-
-        # Get activity splits
-        splits = garmin_api.get_activity_splits(activity_id)
-
         payload: dict[str, Any] = {
             "activity_id": activity_id,
             "summary": flat_activity,
-            # "details": aggregated_details,
-            "splits": splits,
         }
+
+        # payload = enrich_activity_payload(garmin_api, payload, "details")
+        # payload = enrich_activity_payload(garmin_api, payload, "splits")
+        # payload = enrich_activity_payload(garmin_api, payload, "typed_splits")
+        # payload = enrich_activity_payload(garmin_api, payload, "split_summaries")
+        # payload = enrich_activity_payload(garmin_api, payload, "exercise_sets")
+        payload = enrich_activity_payload(garmin_api, payload, "hr_time_in_zones")
+        payload = enrich_activity_payload(garmin_api, payload, "power_time_in_zones")
+        # payload = enrich_activity_payload(garmin_api, payload, "weather")
+        payload = enrich_activity_payload(garmin_api, payload, "gear")
+
         return payload
     except GarminConnectConnectionError:
         return None
