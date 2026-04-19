@@ -2,7 +2,7 @@
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SplitSectionTypeSchema(BaseModel):
@@ -46,9 +46,7 @@ class SplitEventSchema(BaseModel):
 
 
 class LapSchema(BaseModel):
-    model_config = {
-        "extra": "ignore",
-    }
+    model_config = ConfigDict(extra="allow")
 
     averageHR: Optional[float] = None
     averageMovingSpeed: Optional[float] = None

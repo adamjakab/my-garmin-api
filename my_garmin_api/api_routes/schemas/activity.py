@@ -5,8 +5,12 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from .activity_details import AggregatedDetailsSchema
+from .activity_exercise_sets import ActivityExerciseSetsSchema
+from .activity_hr_time_in_zones import HrTimeInZoneSchema
+from .activity_split_summaries import ActivitySplitSummariesSchema
 from .activity_splits import ActivitySplitsSchema
 from .activity_summary import ActivitySummarySchema
+from .activity_typed_splits import ActivityTypedSplitsSchema
 
 
 class ActivitySchema(BaseModel):
@@ -26,29 +30,25 @@ class ActivitySchema(BaseModel):
         description="Structured activity split payload including lap and event details.",
     )
 
-    # TODO: This needs a proper schema definition!
-    typed_splits: Optional[dict[str, Any]] = Field(
+    typed_splits: Optional[ActivityTypedSplitsSchema] = Field(
         default=None,
         title="Typed Activity Splits",
-        description="List of typed activity splits with their respective metrics.",
+        description="Structured workout-phase splits with active/rest interval metrics.",
     )
 
-    # TODO: This needs a proper schema definition!
-    split_summaries: Optional[dict[str, Any]] = Field(
+    split_summaries: Optional[ActivitySplitSummariesSchema] = Field(
         default=None,
         title="Split Summaries",
         description="List of split summaries with their respective metrics.",
     )
 
-    # TODO: This needs a proper schema definition!
-    exercise_sets: Optional[dict[str, Any]] = Field(
+    exercise_sets: Optional[ActivityExerciseSetsSchema] = Field(
         default=None,
         title="Exercise Sets",
         description="Exercise sets information associated with the activity.",
     )
 
-    # TODO: This needs a proper schema definition!
-    hr_time_in_zones: Optional[list[dict[str, Any]]] = Field(
+    hr_time_in_zones: Optional[list[HrTimeInZoneSchema]] = Field(
         default=None,
         title="HR Time In Zones",
         description="Time spent in each heart rate zone during the activity.",
