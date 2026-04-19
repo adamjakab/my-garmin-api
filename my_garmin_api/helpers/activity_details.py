@@ -49,10 +49,14 @@ def aggregate_activity_details(
                         buckets[bucket_ts][key] = []
                     buckets[bucket_ts][key].append(value)
 
+    EXCLUDED_KEYS = {"directTimestamp"}
+
     metrics_output: dict[str, list[dict[str, Any]]] = {}
     for bucket_ts in sorted(buckets.keys()):
         bucket_data = buckets[bucket_ts]
         for key, values in bucket_data.items():
+            if key in EXCLUDED_KEYS:
+                continue
             if key not in metrics_output:
                 metrics_output[key] = []
 
