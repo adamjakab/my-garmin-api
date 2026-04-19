@@ -7,6 +7,12 @@ from my_garmin_api.api_routes.schemas.activity_details import (
     MetricStatSchema,
     MetricsSchema,
 )
+from my_garmin_api.api_routes.schemas.activity_splits import (
+    ActivitySplitsSchema,
+    LapSchema,
+    SplitEventSchema,
+    SplitSectionTypeSchema,
+)
 from my_garmin_api.api_routes.schemas.activity_summary import (
     ActivitySummarySchema,
     ActivityTypeSchema,
@@ -18,6 +24,10 @@ __all__ = [
     "MetricStatSchema",
     "MetricsSchema",
     "AggregatedDetailsSchema",
+    "SplitSectionTypeSchema",
+    "SplitEventSchema",
+    "LapSchema",
+    "ActivitySplitsSchema",
     "ActivitySchema",
     "ActivitiesResponseSchema",
 ]

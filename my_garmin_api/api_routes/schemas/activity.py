@@ -4,8 +4,9 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from my_garmin_api.api_routes.schemas.activity_details import AggregatedDetailsSchema
-from my_garmin_api.api_routes.schemas.activity_summary import ActivitySummarySchema
+from .activity_details import AggregatedDetailsSchema
+from .activity_splits import ActivitySplitsSchema
+from .activity_summary import ActivitySummarySchema
 
 
 class ActivitySchema(BaseModel):
@@ -19,11 +20,10 @@ class ActivitySchema(BaseModel):
         description="Aggregated activity detail metrics with time-bucketed statistics.",
     )
 
-    # TODO: This needs a proper schema definition!
-    splits: dict[str, Any] | None = Field(
+    splits: ActivitySplitsSchema | None = Field(
         default=None,
         title="Activity Splits",
-        description="List of activity splits with their respective metrics.",
+        description="Structured activity split payload including lap and event details.",
     )
 
     # TODO: This needs a proper schema definition!
