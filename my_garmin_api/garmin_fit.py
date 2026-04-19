@@ -4,7 +4,7 @@ import os
 from datetime import date
 from pathlib import Path
 import sys
-from typing import Any
+from typing import Any, Optional
 
 
 from garminconnect import (
@@ -13,10 +13,12 @@ from garminconnect import (
     GarminConnectConnectionError,
     GarminConnectTooManyRequestsError,
 )
+from my_garmin_api.api_routes.schemas.activities import ActivitiesResponseSchema
+from my_garmin_api.api_routes.schemas.activity import ActivitySchema
 from my_garmin_api.helpers.activity_enrichment import enrich_activity_payload
 
 
-def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
+def get_activity_by_id(activity_id: str) -> Optional[ActivitySchema]:
     """Return full details for a single activity by ID.
 
     Returns a dict with 'activity_id', 'summary', and 'splits' keys, or None if not found.
@@ -47,17 +49,19 @@ def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
             "summary": flat_activity,
         }
 
-        # payload = enrich_activity_payload(garmin_api, payload, "details")
-        # payload = enrich_activity_payload(garmin_api, payload, "splits")
-        # payload = enrich_activity_payload(garmin_api, payload, "typed_splits")
-        # payload = enrich_activity_payload(garmin_api, payload, "split_summaries")
-        # payload = enrich_activity_payload(garmin_api, payload, "exercise_sets")
+        # Enrich the payload with additional resources
+        payload = enrich_activity_payload(garmin_api, payload, "details")
+        payload = enrich_activity_payload(garmin_api, payload, "splits")
+        payload = enrich_activity_payload(garmin_api, payload, "typed_splits")
+        payload = enrich_activity_payload(garmin_api, payload, "split_summaries")
+        payload = enrich_activity_payload(garmin_api, payload, "exercise_sets")
         payload = enrich_activity_payload(garmin_api, payload, "hr_time_in_zones")
         payload = enrich_activity_payload(garmin_api, payload, "power_time_in_zones")
-        # payload = enrich_activity_payload(garmin_api, payload, "weather")
+        payload = enrich_activity_payload(garmin_api, payload, "weather")
         payload = enrich_activity_payload(garmin_api, payload, "gear")
 
-        return payload
+        return ActivitySchema.model_validate(payload)
+
     except GarminConnectConnectionError:
         return None
 
@@ -65,41 +69,43 @@ def get_activity_by_id(activity_id: str) -> dict[str, Any] | None:
 def get_activities_for_date_range(
     start_date: date,
     end_date: date,
-) -> list[dict[str, Any]]:
+) -> ActivitiesResponseSchema:
     """Return all available Garmin activity data (summary only) for an inclusive date range.
-    Each activity is represented as a dict with at least an 'activity_id' and 'summary' key.
-    The 'summary' value is the raw activity data returned by Garmin Connect API.
     If any errors were encountered during fetching, an 'errors' key will be included with details.
     """
     garmin_api = auth_garmin()
     if not garmin_api:
-        return []
+        return ActivitiesResponseSchema(
+            start_date=start_date.isoformat(),
+            end_date=end_date.isoformat(),
+            count=0,
+            activities=[],
+        )
 
     activities = garmin_api.get_activities_by_date(
         startdate=start_date.isoformat(),
         enddate=end_date.isoformat(),
     )
 
-    result = []
+    result: list[ActivitySchema] = []
     for activity in activities:
         activity_id = activity.get("activityId")
         payload: dict[str, Any] = {
             "activity_id": activity_id,
             "summary": activity,
         }
-        errors: dict[str, str] = {}
 
         if activity_id is None:
             payload["errors"] = {"activity": "Garmin activity search response did not include activityId"}
-            result.append(payload)
-            continue
 
-        if errors:
-            payload["errors"] = errors
+        result.append(ActivitySchema.model_validate(payload))
 
-        result.append(payload)
-
-    return result
+    return ActivitiesResponseSchema(
+        start_date=start_date.isoformat(),
+        end_date=end_date.isoformat(),
+        count=len(result),
+        activities=result,
+    )
 
 
 def auth_garmin() -> Garmin | None:

@@ -6,23 +6,9 @@ from fastapi import APIRouter, HTTPException, Query
 
 import my_garmin_api.garmin_fit as gfit
 from my_garmin_api.api_routes.schemas.activities import ActivitiesResponseSchema
-from my_garmin_api.api_routes.schemas.activity import ActivitySchema
 
 
 router = APIRouter(tags=["Activities"])
-
-
-def _build_activity_response(
-    start_date: date,
-    end_date: date,
-    activities: list[dict],
-) -> ActivitiesResponseSchema:
-    return ActivitiesResponseSchema(
-        start_date=start_date.isoformat(),
-        end_date=end_date.isoformat(),
-        count=len(activities),
-        activities=[ActivitySchema.model_validate(a) for a in activities],
-    )
 
 
 @router.get(
@@ -58,14 +44,9 @@ async def get_activities(
         )
 
     try:
-        activities = gfit.get_activities_for_date_range(
+        return gfit.get_activities_for_date_range(
             start_date=start_date,
             end_date=end_date,
-        )
-        return _build_activity_response(
-            start_date,
-            end_date,
-            activities,
         )
     except Exception as exc:
         raise HTTPException(
