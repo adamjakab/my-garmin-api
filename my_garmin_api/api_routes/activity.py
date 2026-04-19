@@ -16,10 +16,10 @@ _YN_DESC = 'Use "Y" to include this enrichment block.'
     "/activity/{activity_id}",
     summary="Fetch detailed activity information.",
     description=(
-        "Fetch full details for a specific activity identified by its ID. "
-        "Use the query parameters to specify which enrichment blocks to include in the response. "
-        "This endpoint returns a comprehensive view of the activity, including summary metrics and "
-        "optionally detailed metrics,splits, laps, exercise sets, time in zones, weather, and gear information."
+        "Fetch full details for a specific activity by ID. "
+        "Use query parameters to select enrichment blocks for the response. "
+        "Returns a comprehensive activity view with summary metrics and optional details, splits, laps, "
+        "exercise sets, time in zones, weather, and gear."
     ),
     operation_id="getActivityById",
     response_model=ActivitySchema,
