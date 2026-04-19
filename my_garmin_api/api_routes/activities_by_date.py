@@ -44,10 +44,19 @@ async def get_activities(
         )
 
     try:
-        return gfit.get_activities_for_date_range(
+        activities = gfit.get_activities_for_date_range(
             start_date=start_date,
             end_date=end_date,
         )
+        if activities is None:
+            return ActivitiesResponseSchema(
+                start_date=start_date.isoformat(),
+                end_date=end_date.isoformat(),
+                count=0,
+                activities=[],
+            )
+
+        return ActivitiesResponseSchema.model_validate(activities)
     except Exception as exc:
         raise HTTPException(
             status_code=500,
