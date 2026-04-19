@@ -11,6 +11,7 @@
     ],
     "cSpell.words": [
         "cffi",
+        "DTOs",
         "enddate",
         "fastapi",
         "garminconnect",
