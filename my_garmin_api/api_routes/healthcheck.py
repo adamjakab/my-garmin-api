@@ -41,6 +41,7 @@ PROJECT_VERSION = _read_version_from_pyproject()
     description="Verify that the API service is running.",
     operation_id="getHealth",
     response_model=HealthResponseSchema,
+    include_in_schema=False,
 )
 async def get_health() -> HealthResponseSchema:
     """Return a simple health payload."""
