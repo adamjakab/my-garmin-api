@@ -53,10 +53,13 @@ SERVER_MODES = {
     },
 }
 
-AUTH_EXEMPT_PATHS = {"/docs", "/openapi.json"}
+AUTH_EXEMPT_PATHS = {"/", "/docs", "/openapi.json"}
 
-for router in discover_routers():
-    app.include_router(router, dependencies=[Depends(require_api_key)])
+for router, requires_api_key in discover_routers():
+    if requires_api_key:
+        app.include_router(router, dependencies=[Depends(require_api_key)])
+    else:
+        app.include_router(router)
 
 
 @app.middleware("http")
