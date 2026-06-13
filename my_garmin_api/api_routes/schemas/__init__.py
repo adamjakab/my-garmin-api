@@ -13,7 +13,7 @@ from my_garmin_api.api_routes.schemas.activity_exercise_sets import (
     ExerciseSetExerciseSchema,
 )
 from my_garmin_api.api_routes.schemas.activity_gear import ActivityGearSchema
-from my_garmin_api.api_routes.schemas.activity_hrv import HrvEntrySchema, HrvResponseSchema
+from my_garmin_api.api_routes.schemas.hrv import HrvEntrySchema, HrvResponseSchema
 from my_garmin_api.api_routes.schemas.activity_hr_time_in_zones import (
     HrTimeInZoneSchema,
 )

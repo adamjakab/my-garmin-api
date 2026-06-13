@@ -126,17 +126,20 @@ def get_hrv_for_date_range(
         while current <= to_date:
             hrv_data = garmin_api.get_hrv_data(current.isoformat())
             if hrv_data is not None:
+                # Drop high-volume samples from API output while preserving summary-level HRV fields.
+                sanitized_hrv_data = dict(hrv_data)
+                sanitized_hrv_data.pop("hrvReadings", None)
                 result.append(
                     {
                         "date": current.isoformat(),
-                        "hrv": hrv_data,
+                        "hrv": sanitized_hrv_data,
                     }
                 )
             current += timedelta(days=1)
 
         return {
-            "from_date": from_date.isoformat(),
-            "to_date": to_date.isoformat(),
+            "start_date": from_date.isoformat(),
+            "end_date": to_date.isoformat(),
             "count": len(result),
             "hrv_data": result,
         }
