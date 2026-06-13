@@ -38,5 +38,7 @@
         "**/.tox": true,
         ".venv": true
     },
-    "explorerExclude.backup": {}
+    "explorerExclude.backup": {},
+    "python-envs.defaultEnvManager": "ms-python.python:poetry",
+    "python-envs.defaultPackageManager": "ms-python.python:poetry"
 }
