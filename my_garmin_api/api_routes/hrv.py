@@ -31,19 +31,18 @@ async def get_hrv(
     ),
 ) -> HrvResponseSchema:
     """Fetch HRV data for an inclusive date range."""
-    resolved_end_date = end_date or start_date
-    if resolved_end_date < start_date:
+    if end_date < start_date:
         raise HTTPException(
             status_code=400,
             detail="end_date cannot be before start_date",
         )
 
     try:
-        hrv_payload = gfit.get_hrv_for_date_range(from_date=start_date, to_date=resolved_end_date)
+        hrv_payload = gfit.get_hrv_for_date_range(from_date=start_date, to_date=end_date)
         if hrv_payload is None or hrv_payload.get("count", 0) == 0:
             raise HTTPException(
                 status_code=404,
-                detail=f"No HRV data found for {start_date.isoformat()} to {resolved_end_date.isoformat()}",
+                detail=f"No HRV data found for {start_date.isoformat()} to {end_date.isoformat()}",
             )
 
         return HrvResponseSchema.model_validate(hrv_payload)
@@ -52,5 +51,5 @@ async def get_hrv(
     except Exception as exc:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to fetch HRV for {start_date.isoformat()} to {resolved_end_date.isoformat()}: {str(exc)}",
+            detail=f"Failed to fetch HRV for {start_date.isoformat()} to {end_date.isoformat()}: {str(exc)}",
         ) from exc

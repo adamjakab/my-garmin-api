@@ -206,12 +206,14 @@ Response:
 Fetch heart-rate variability (HRV) data for a single date or an inclusive date range.
 
 ```bash
-# Single date (start_date only)
-curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?start_date=2026-04-09"
+# Single date (set start_date and end_date to the same value)
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?start_date=2026-04-09&end_date=2026-04-09"
 
 # Date range
 curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?start_date=2026-04-09&end_date=2026-04-11"
 ```
+
+Both `start_date` and `end_date` are required for `/hrv`.
 
 Response:
 
@@ -247,6 +249,10 @@ http://localhost:8000/openapi.json
 2. Expose the API (e.g., via ngrok, tunnel, or cloud deployment): `ngrok http 8000`
 3. In ChatGPT GPT settings, add schema URL: `https://<your-domain>/openapi.json`
 4. Test in ChatGPT by asking it to fetch activities for a specific date
+
+Compatibility note:
+
+- For ChatGPT Action/OpenAPI imports, avoid nullable date query parameters (for example `date | None`) on tool-facing endpoints. Use required query dates and pass the same date for single-day queries.
 
 **Example Schema URL Formats:**
 
