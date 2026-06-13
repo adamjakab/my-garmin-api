@@ -6,9 +6,9 @@ from pkgutil import iter_modules
 from fastapi import APIRouter
 
 
-def discover_routers() -> list[APIRouter]:
-    """Return all APIRouter instances exposed as `router` in this package."""
-    routers: list[APIRouter] = []
+def discover_routers() -> list[tuple[APIRouter, bool]]:
+    """Return all routers with whether API-key auth should be enforced."""
+    routers: list[tuple[APIRouter, bool]] = []
 
     for module_info in sorted(iter_modules(__path__), key=lambda item: item.name):
         if module_info.name.startswith("_"):
@@ -17,6 +17,7 @@ def discover_routers() -> list[APIRouter]:
         module = import_module(f"{__name__}.{module_info.name}")
         router = getattr(module, "router", None)
         if isinstance(router, APIRouter):
-            routers.append(router)
+            requires_api_key = bool(getattr(module, "REQUIRE_API_KEY", True))
+            routers.append((router, requires_api_key))
 
     return routers

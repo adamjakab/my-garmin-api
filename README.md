@@ -156,7 +156,8 @@ Response:
 ```json
 {
  "status": "ok",
- "message": "My Garmin API is running"
+ "message": "My Garmin API is running",
+ "version": "0.1.3"
 }
 ```
 
