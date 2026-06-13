@@ -206,19 +206,19 @@ Response:
 Fetch heart-rate variability (HRV) data for a single date or an inclusive date range.
 
 ```bash
-# Single date (from_date only)
-curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?from_date=2026-04-09"
+# Single date (start_date only)
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?start_date=2026-04-09"
 
 # Date range
-curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?from_date=2026-04-09&to_date=2026-04-11"
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?start_date=2026-04-09&end_date=2026-04-11"
 ```
 
 Response:
 
 ```json
 {
- "from_date": "2026-04-09",
- "to_date": "2026-04-11",
+ "start_date": "2026-04-09",
+ "end_date": "2026-04-11",
  "count": 2,
  "hrv_data": [
   {
