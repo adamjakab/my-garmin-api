@@ -5,6 +5,8 @@ from pathlib import Path
 from fastapi import APIRouter
 import tomli
 
+from my_garmin_api.api_routes.schemas.healthcheck import HealthResponseSchema
+
 
 REQUIRE_API_KEY = False
 router = APIRouter(tags=["Health"])
@@ -38,11 +40,12 @@ PROJECT_VERSION = _read_version_from_pyproject()
     summary="Health check",
     description="Verify that the API service is running.",
     operation_id="getHealth",
+    response_model=HealthResponseSchema,
 )
-async def get_health() -> dict[str, str]:
+async def get_health() -> HealthResponseSchema:
     """Return a simple health payload."""
-    return {
-        "status": "ok",
-        "message": "My Garmin API is running",
-        "version": PROJECT_VERSION,
-    }
+    return HealthResponseSchema(
+        status="ok",
+        message="My Garmin API is running",
+        version=PROJECT_VERSION,
+    )
