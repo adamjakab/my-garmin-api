@@ -1,7 +1,7 @@
 """Garmin activity data aggregation helpers."""
 
 import os
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 import sys
 from typing import Any, Dict, Optional
@@ -111,20 +111,34 @@ def get_activities_for_date_range(
     }
 
 
-def get_hrv_for_date(target_date: date) -> Optional[Dict[str, Any]]:
-    """Return HRV data for the provided date."""
+def get_hrv_for_date_range(
+    from_date: date,
+    to_date: date,
+) -> Optional[Dict[str, Any]]:
+    """Return HRV data for the provided inclusive date range."""
     garmin_api = auth_garmin()
     if not garmin_api:
         return None
 
     try:
-        hrv_data = garmin_api.get_hrv_data(target_date.isoformat())
-        if hrv_data is None:
-            return None
+        result: list[Dict[str, Any]] = []
+        current = from_date
+        while current <= to_date:
+            hrv_data = garmin_api.get_hrv_data(current.isoformat())
+            if hrv_data is not None:
+                result.append(
+                    {
+                        "date": current.isoformat(),
+                        "hrv": hrv_data,
+                    }
+                )
+            current += timedelta(days=1)
 
         return {
-            "date": target_date.isoformat(),
-            "hrv": hrv_data,
+            "from_date": from_date.isoformat(),
+            "to_date": to_date.isoformat(),
+            "count": len(result),
+            "hrv_data": result,
         }
     except GarminConnectConnectionError:
         return None
