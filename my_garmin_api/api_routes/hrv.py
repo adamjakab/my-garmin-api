@@ -26,7 +26,7 @@ async def get_hrv(
     start_date: date = Query(
         description="Start date of the HRV data request in YYYY-MM-DD format.",
     ),
-    end_date: date | None = Query(
+    end_date: date = Query(
         description="End date of the HRV data request in YYYY-MM-DD format.",
     ),
 ) -> HrvResponseSchema:

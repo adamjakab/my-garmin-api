@@ -155,12 +155,12 @@ class HrvEntrySchema(BaseModel):
 
 class HrvResponseSchema(BaseModel):
     start_date: str = Field(
-        title="Requester start date",
-        description="The start date of the requested range in YYYY-MM-DD format.",
+        title="Requested start date",
+        description="The start date of the requested range.",
     )
     end_date: str = Field(
-        title="Requester end date",
-        description="The end date of the requested range in YYYY-MM-DD format.",
+        title="Requested end date",
+        description="The end date of the requested range.",
     )
     count: int = Field(
         title="Count",
