@@ -111,6 +111,25 @@ def get_activities_for_date_range(
     }
 
 
+def get_hrv_for_date(target_date: date) -> Optional[Dict[str, Any]]:
+    """Return HRV data for the provided date."""
+    garmin_api = auth_garmin()
+    if not garmin_api:
+        return None
+
+    try:
+        hrv_data = garmin_api.get_hrv_data(target_date.isoformat())
+        if hrv_data is None:
+            return None
+
+        return {
+            "date": target_date.isoformat(),
+            "hrv": hrv_data,
+        }
+    except GarminConnectConnectionError:
+        return None
+
+
 def auth_garmin() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 

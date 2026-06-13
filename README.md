@@ -200,6 +200,23 @@ Response:
 }
 ```
 
+#### GET /hrv
+
+Fetch heart-rate variability (HRV) data for a specific date.
+
+```bash
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/hrv?date=2026-04-09"
+```
+
+Response:
+
+```json
+{
+ "date": "2026-04-09",
+ "hrv": { ... }
+}
+```
+
 ### OpenAPI Schema (ChatGPT Integration)
 
 The OpenAPI 3.0 schema is automatically generated and available at:
