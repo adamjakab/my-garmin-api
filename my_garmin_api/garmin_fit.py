@@ -180,6 +180,51 @@ def get_rhr_for_date_range(
         return None
 
 
+def get_weight_for_date_range(
+    from_date: date,
+    to_date: date,
+) -> Optional[Dict[str, Any]]:
+    """Return weight/body composition measurements for the provided inclusive date range."""
+    garmin_api = auth_garmin()
+    if not garmin_api:
+        return None
+
+    try:
+        body_composition = garmin_api.get_body_composition(
+            startdate=from_date.isoformat(),
+            enddate=to_date.isoformat(),
+        )
+
+        measurements = body_composition.get("dateWeightList", [])
+        if not isinstance(measurements, list):
+            measurements = []
+
+        result: list[Dict[str, Any]] = []
+        for measurement in measurements:
+            if not isinstance(measurement, dict):
+                continue
+
+            measurement_date = measurement.get("calendarDate")
+            if not isinstance(measurement_date, str) or not measurement_date:
+                measurement_date = from_date.isoformat()
+
+            result.append(
+                {
+                    "date": measurement_date,
+                    "weight": measurement,
+                }
+            )
+
+        return {
+            "start_date": from_date.isoformat(),
+            "end_date": to_date.isoformat(),
+            "count": len(result),
+            "weight_data": result,
+        }
+    except GarminConnectConnectionError:
+        return None
+
+
 def auth_garmin() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 

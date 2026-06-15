@@ -16,6 +16,7 @@ from my_garmin_api.api_routes.schemas.activity_gear import ActivityGearSchema
 from my_garmin_api.api_routes.schemas.healthcheck import HealthResponseSchema
 from my_garmin_api.api_routes.schemas.hrv import HrvEntrySchema, HrvResponseSchema
 from my_garmin_api.api_routes.schemas.rhr import RhrEntrySchema, RhrResponseSchema
+from my_garmin_api.api_routes.schemas.weight import WeightEntrySchema, WeightResponseSchema
 from my_garmin_api.api_routes.schemas.activity_hr_time_in_zones import (
     HrTimeInZoneSchema,
 )
@@ -67,6 +68,8 @@ __all__ = [
     "HrvResponseSchema",
     "RhrEntrySchema",
     "RhrResponseSchema",
+    "WeightEntrySchema",
+    "WeightResponseSchema",
     "SplitSectionTypeSchema",
     "SplitEventSchema",
     "LapSchema",
