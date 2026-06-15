@@ -8,26 +8,27 @@ from my_garmin_api.api_routes.schemas.hrv import HrvResponseSchema
 import my_garmin_api.garmin_fit as gfit
 
 
-router = APIRouter(tags=["HRV"])
+router = APIRouter()
 
 
 @router.get(
     "/hrv",
-    summary="Fetch HRV data for a date or date range.",
+    summary="Get HRV data",
     description=(
-        "Fetch heart-rate variability (HRV) data for a date range between the specified start and end dates. "
-        "This endpoint can be used to fetch HRV data for a single date (start_date same as "
-        "end_date) or to get HRV data between two specific dates."
+        "Fetch heart-rate variability (HRV) data from Garmin. "
+        "Fetch HRV data for a single date (start_date same as end_date) or "
+        "for a date range between the start and end dates. "
     ),
+    tags=["Health"],
     operation_id="getHrvByDateRange",
     response_model=HrvResponseSchema,
 )
 async def get_hrv(
     start_date: date = Query(
-        description="Start date of the HRV data request in YYYY-MM-DD format.",
+        description="This required parameter is the start of the requested date range. Format: YYYY-MM-DD ",
     ),
     end_date: date = Query(
-        description="End date of the HRV data request in YYYY-MM-DD format.",
+        description="This required parameter is the end of the requested date range. Format: YYYY-MM-DD ",
     ),
 ) -> HrvResponseSchema:
     """Fetch HRV data for an inclusive date range."""
