@@ -1,4 +1,6 @@
-"""Health endpoint for the FastAPI application."""
+"""Health endpoint for the FastAPI application.
+DISABLED - This endpoint is currently disabled and will not be discovered.
+"""
 
 from pathlib import Path
 
