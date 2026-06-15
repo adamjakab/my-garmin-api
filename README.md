@@ -303,6 +303,46 @@ Response:
 }
 ```
 
+#### GET /sleep
+
+Fetch sleep score and sleep duration for a single date or an inclusive date range.
+
+```bash
+# Single date (set start_date and end_date to the same value)
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/sleep?start_date=2026-04-09&end_date=2026-04-09"
+
+# Date range
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/sleep?start_date=2026-04-09&end_date=2026-04-11"
+```
+
+Both `start_date` and `end_date` are required for `/sleep`.
+
+Response:
+
+```json
+{
+ "start_date": "2026-04-09",
+ "end_date": "2026-04-11",
+ "count": 2,
+ "sleep_data": [
+  {
+   "date": "2026-04-09",
+   "sleep": {
+    "score": 78,
+    "duration_seconds": 26040
+   }
+  },
+  {
+   "date": "2026-04-10",
+   "sleep": {
+    "score": 81,
+    "duration_seconds": 26700
+   }
+  }
+ ]
+}
+```
+
 ### OpenAPI Schema (ChatGPT Integration)
 
 The OpenAPI 3.0 schema is automatically generated and available at:

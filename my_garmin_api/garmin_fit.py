@@ -225,6 +225,53 @@ def get_weight_for_date_range(
         return None
 
 
+def get_sleep_for_date_range(
+    from_date: date,
+    to_date: date,
+) -> Optional[Dict[str, Any]]:
+    """Return sleep data for the provided inclusive date range."""
+    garmin_api = auth_garmin()
+    if not garmin_api:
+        return None
+
+    try:
+        result: list[Dict[str, Any]] = []
+        current = from_date
+        while current <= to_date:
+            sleep_data = garmin_api.get_sleep_data(current.isoformat())
+            if sleep_data is not None:
+                sleep_score = sleep_data.get("sleepScore") if isinstance(sleep_data, dict) else None
+                score_value = sleep_score.get("overallScore") if isinstance(sleep_score, dict) else None
+
+                duration_seconds = None
+                if isinstance(sleep_data, dict):
+                    duration_seconds = sleep_data.get("sleepTimeSeconds")
+
+                if score_value is None and duration_seconds is None:
+                    current += timedelta(days=1)
+                    continue
+
+                result.append(
+                    {
+                        "date": current.isoformat(),
+                        "sleep": {
+                            "score": score_value,
+                            "duration_seconds": duration_seconds,
+                        },
+                    }
+                )
+            current += timedelta(days=1)
+
+        return {
+            "start_date": from_date.isoformat(),
+            "end_date": to_date.isoformat(),
+            "count": len(result),
+            "sleep_data": result,
+        }
+    except GarminConnectConnectionError:
+        return None
+
+
 def auth_garmin() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 
