@@ -240,12 +240,31 @@ def get_sleep_for_date_range(
         while current <= to_date:
             sleep_data = garmin_api.get_sleep_data(current.isoformat())
             if sleep_data is not None:
-                sleep_score = sleep_data.get("sleepScore") if isinstance(sleep_data, dict) else None
-                score_value = sleep_score.get("overallScore") if isinstance(sleep_score, dict) else None
-
+                score_value = None
                 duration_seconds = None
                 if isinstance(sleep_data, dict):
-                    duration_seconds = sleep_data.get("sleepTimeSeconds")
+                    daily_sleep = sleep_data.get("dailySleepDTO")
+                    if isinstance(daily_sleep, dict):
+                        duration_seconds = daily_sleep.get("sleepTimeSeconds")
+
+                        sleep_scores = daily_sleep.get("sleepScores")
+                        if isinstance(sleep_scores, dict):
+                            overall = sleep_scores.get("overall")
+                            if isinstance(overall, dict):
+                                score_value = overall.get("value")
+
+                        if score_value is None:
+                            legacy_score = daily_sleep.get("sleepScore")
+                            if isinstance(legacy_score, dict):
+                                score_value = legacy_score.get("overallScore")
+
+                    if duration_seconds is None:
+                        duration_seconds = sleep_data.get("sleepTimeSeconds")
+
+                    if score_value is None:
+                        legacy_top_score = sleep_data.get("sleepScore")
+                        if isinstance(legacy_top_score, dict):
+                            score_value = legacy_top_score.get("overallScore")
 
                 if score_value is None and duration_seconds is None:
                     current += timedelta(days=1)
