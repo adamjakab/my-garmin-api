@@ -13,12 +13,13 @@ router = APIRouter(tags=["Activities"])
 
 @router.get(
     "/activities",
-    summary="Fetch activities between two specific dates.",
+    name="Get Activities",
+    summary="Fetch run or other activity data between two specific dates.",
     description=(
-        "Fetch all activity data for a date range between the specified start and end dates. "
-        "This endpoint can be used to fetch activities for a single date (start_date same as "
-        "end_date) or to get activities between two specific dates."
+        "Fetch a list of physical activities from Garmin for a date range. "
+        "Fetch activities for a single date (start_date same as end_date) or between the start and end dates. "
     ),
+    tags=["Garmin", "Activity"],
     operation_id="getActivitiesByDateRange",
     response_model=ActivitiesResponseSchema,
 )
