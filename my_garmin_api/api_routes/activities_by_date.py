@@ -8,41 +8,31 @@ import my_garmin_api.garmin_fit as gfit
 from my_garmin_api.api_routes.schemas.activities import ActivitiesResponseSchema
 
 
-router = APIRouter(tags=["Activities"])
+router = APIRouter()
 
 
 @router.get(
     "/activities",
-    name="Get Activities",
-    summary="Fetch run or other activity data between two specific dates.",
+    summary="Get Garmin activities",
     description=(
-        "Fetch a list of physical activities from Garmin for a date range. "
-        "Fetch activities for a single date (start_date same as end_date) or between the start and end dates. "
+        "Fetch a list of physical activities from Garmin. "
+        "Fetch activities for a single date (start_date same as end_date) or "
+        "for a date range between the start and end dates. "
     ),
-    tags=["Garmin", "Activity"],
+    tags=["Activity"],
     operation_id="getActivitiesByDateRange",
     response_model=ActivitiesResponseSchema,
 )
 async def get_activities(
     start_date: date = Query(
-        description=(
-            "This parameter controls the start of the requested activity date range. "
-            "Provide it in YYYY-MM-DD format. This is a required parameter."
-        ),
+        description=("This required parameter is the start of the requested date range. Format: YYYY-MM-DD "),
     ),
     end_date: date = Query(
-        description=(
-            "This parameter controls the end of the requested activity date range. "
-            "Provide it in YYYY-MM-DD format. This is a required parameter."
-        ),
+        description=("This required parameter is the end of the requested date range. Format: YYYY-MM-DD "),
     ),
 ) -> ActivitiesResponseSchema:
     """
     Fetch activities for an inclusive date range.
-
-    **Parameters:**
-    - `start_date`: Range start in YYYY-MM-DD format (required)
-    - `end_date`: Range end in YYYY-MM-DD format (required)
     """
     if end_date < start_date:
         raise HTTPException(

@@ -7,31 +7,32 @@ from my_garmin_api.helpers.activity_enrichment import ActivityResourceName
 import my_garmin_api.garmin_fit as gfit
 
 
-router = APIRouter(tags=["Activity"])
+router = APIRouter()
 
 _YN_DESC = 'Use "Y" to include this enrichment block.'
 
 
 @router.get(
     "/activity/{activity_id}",
-    summary="Fetch detailed activity information.",
+    summary="Get a Garmin activity",
     description=(
         "Fetch full details for a specific activity by ID. "
-        "Use query parameters to select enrichment blocks for the response. "
-        "Returns a comprehensive activity view with summary metrics and optional details, splits, laps, "
-        "exercise sets, time in zones, weather, and gear."
+        "Returns a comprehensive activity view with summary metrics and any of the following optional enrichment blocks: "
+        "details, splits, laps, exercise sets, time in zones, weather, or gear. "
+        "Use query parameters to select enrichment blocks required for the response. "
     ),
+    tags=["Activity"],
     operation_id="getActivityById",
     response_model=ActivitySchema,
 )
 async def get_activity(
     activity_id: str = Path(
-        ...,
         title="Activity ID",
         description="The unique identifier of the Garmin activity.",
     ),
     details: str = Query(
         default="N",
+        title="Include detailed metrics",
         description=(
             "This flag controls whether to include the detailed metrics about the activity aggregated for each 60 second interval. "
             "Each metric (heart rate, speed, cadence, etc.) includes time in zone buckets with min/max/avg values. "
@@ -41,6 +42,7 @@ async def get_activity(
     ),
     splits: str = Query(
         default="N",
+        title="Include auto-generated lap information and events",
         description=(
             "This flag controls whether to include auto-generated lap information and events. "
             "Laps are typically emitted at regular distance intervals (e.g. every 1 km during runs) and include aggregated metrics for that lap. "
@@ -51,6 +53,7 @@ async def get_activity(
     ),
     typed_splits: str = Query(
         default="N",
+        title="Include workout-phase splits",
         description=(
             "This flag controls whether to include workout-phase splits such as active and rest intervals with per-phase metrics. "
             "Typed splits group split data by Garmin split type (active, rest, etc.) for easier comparison. "
@@ -60,6 +63,7 @@ async def get_activity(
     ),
     split_summaries: str = Query(
         default="N",
+        title="Include summary information for splits",
         description=(
             "This flag controls whether to include summary information for splits. "
             "Split summaries provide aggregate stats over all splits, helping you quickly assess consistency and pacing. "
@@ -69,6 +73,7 @@ async def get_activity(
     ),
     exercise_sets: str = Query(
         default="N",
+        title="Include exercise set information",
         description=(
             "This flag controls whether to include exercise set information. "
             "Exercise sets include structured workout steps and set-level performance information when present. "
@@ -78,6 +83,7 @@ async def get_activity(
     ),
     hr_time_in_zones: str = Query(
         default="N",
+        title="Include heart rate time in zones information",
         description=(
             "This flag controls whether to include heart rate time in zones information. "
             "Heart rate time in zones reports cumulative time spent in each configured heart rate zone. "
@@ -87,6 +93,7 @@ async def get_activity(
     ),
     power_time_in_zones: str = Query(
         default="N",
+        title="Include power time in zones information",
         description=(
             "This flag controls whether to include power time in zones information. "
             "Power time in zones reports cumulative time spent in each configured cycling power zone. "
@@ -96,6 +103,7 @@ async def get_activity(
     ),
     weather: str = Query(
         default="N",
+        title="Include weather information",
         description=(
             "This flag controls whether to include weather information. "
             "Weather includes environmental conditions recorded for the activity such as temperature, humidity, and wind. "
@@ -105,6 +113,7 @@ async def get_activity(
     ),
     gear: str = Query(
         default="N",
+        title="Include gear information",
         description=(
             "This flag controls whether to include gear information. "
             "Gear includes equipment associated with the activity, such as shoes or bike components when available. "
@@ -115,12 +124,6 @@ async def get_activity(
 ) -> ActivitySchema:
     """
     Fetch full details for a specific activity.
-
-    **Parameters:**
-    - `activity_id`: The activity ID (positive integer, required)
-    - `details`, `splits`, `typed_splits`, `split_summaries`, `exercise_sets`,
-      `hr_time_in_zones`, `power_time_in_zones`, `weather`, `gear`:
-            Y/N flags controlling which enrichment blocks are included (default: N).
     """
     enabled: set[ActivityResourceName] = {
         resource  # type: ignore[misc]
