@@ -147,6 +147,39 @@ def get_hrv_for_date_range(
         return None
 
 
+def get_rhr_for_date_range(
+    from_date: date,
+    to_date: date,
+) -> Optional[Dict[str, Any]]:
+    """Return resting heart rate data for the provided inclusive date range."""
+    garmin_api = auth_garmin()
+    if not garmin_api:
+        return None
+
+    try:
+        result: list[Dict[str, Any]] = []
+        current = from_date
+        while current <= to_date:
+            rhr_data = garmin_api.get_rhr_day(current.isoformat())
+            if rhr_data is not None:
+                result.append(
+                    {
+                        "date": current.isoformat(),
+                        "rhr": rhr_data,
+                    }
+                )
+            current += timedelta(days=1)
+
+        return {
+            "start_date": from_date.isoformat(),
+            "end_date": to_date.isoformat(),
+            "count": len(result),
+            "rhr_data": result,
+        }
+    except GarminConnectConnectionError:
+        return None
+
+
 def auth_garmin() -> Garmin | None:
     """Initialise Garmin API, restoring saved tokens or logging in fresh."""
 
