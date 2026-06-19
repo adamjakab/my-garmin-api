@@ -343,6 +343,36 @@ Response:
 }
 ```
 
+#### GET /vo2max
+
+Fetch VO2 max data for a single date or an inclusive date range.
+
+```bash
+# Single date (set start_date and end_date to the same value)
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/vo2max?start_date=2026-04-09&end_date=2026-04-09"
+
+# Date range
+curl -H "X-API-Key: <your-api-key>" "http://localhost:8000/vo2max?start_date=2026-04-09&end_date=2026-04-11"
+```
+
+Both `start_date` and `end_date` are required for `/vo2max`.
+
+Response:
+
+```json
+{
+ "start_date": "2026-04-09",
+ "end_date": "2026-04-11",
+ "count": 2,
+ "vo2max_data": [
+  {
+   "date": "2026-04-09",
+    "vo2max_precise_value": 54.6
+  }
+ ]
+}
+```
+
 ### OpenAPI Schema (ChatGPT Integration)
 
 The OpenAPI 3.0 schema is automatically generated and available at:
